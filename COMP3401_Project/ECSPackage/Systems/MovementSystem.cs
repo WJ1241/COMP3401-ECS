@@ -15,7 +15,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Velocity Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 13/01/22
+    /// Date: 17/01/22
     /// </summary>
     public class MovementSystem : IInitialiseDeleteDel, IInitialiseIROIEntityDictionary, IUpdatable
     {
@@ -43,7 +43,11 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// </summary>
         public MovementSystem()
         {
-            // EMPTY CONSTRUCTOR
+            // INSTANTIATE _transformCompDict as a new Dictionary<int, IPosition>():
+            _transformCompDict = new Dictionary<int, IPosition>();
+
+            // INSTANTIATE _velocityCompDict as a new Dictionary<int, IVelocity>():
+            _velocityCompDict = new Dictionary<int, IVelocity>();
         }
 
         #endregion
@@ -83,8 +87,8 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <param name="pGameTime"> holds reference to GameTime object </param>
         public void Update(GameTime pGameTime)
         {
-            // CALL CreateDictionaries() iteratively so references are not kept:
-            CreateDictionaries();
+            // CALL AddToCompDictionaries() iteratively so references are not kept:
+            AddToCompDictionaries();
 
             // FOREACH Moveable entity:
             foreach (int pInt in _velocityCompDict.Keys)
@@ -106,15 +110,15 @@ namespace COMP3401_Project.ECSPackage.Systems
         #region PRIVATE METHODS
 
         /// <summary>
-        /// Method which creates temporary dictionaries and adds current entities on screen to them
+        /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void CreateDictionaries()
+        private void AddToCompDictionaries()
         {
-            // INSTANTIATE _transformCompDict as a new Dictionary<int, IPosition>():
-            _transformCompDict = new Dictionary<int, IPosition>();
+            // CALL Clear() on _transformCompDict, prevents entities being added multiple times:
+            _transformCompDict.Clear();
 
-            // INSTANTIATE _velocityCompDict as a new Dictionary<int, IVelocity>():
-            _velocityCompDict = new Dictionary<int, IVelocity>();
+            // CALL Clear() on _velocityCompDict, prevents entities being added multiple times:
+            _velocityCompDict.Clear();
 
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)

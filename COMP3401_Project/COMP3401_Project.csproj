@@ -64,8 +64,10 @@
     <Compile Include="ECSPackage\Factories\Factory.cs" />
     <Compile Include="ECSPackage\Factories\Interfaces\IFactory.cs" />
     <Compile Include="ECSPackage\Systems\CollisionSystem.cs" />
+    <Compile Include="ECSPackage\Systems\InputSystem.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\ICollisionResponder.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseICollisionResponder.cs" />
+    <Compile Include="ECSPackage\Systems\Interfaces\IInputResponder.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISceneManager.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISpawnEntity.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseIUpdatable.cs" />

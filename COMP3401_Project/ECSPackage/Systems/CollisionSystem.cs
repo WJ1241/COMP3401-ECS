@@ -13,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses HitBox Components to test whether entities have collided with other entities
     /// Author: William Smith & Marc Price
-    /// Date: 14/01/22
+    /// Date: 17/01/22
     /// </summary>
     /// <REFERENCE> Price, M. (2021) ‘Session 16 - Collision Management’, Games Design & Engineering: Sessions. Available at: https://worcesterbb.blackboard.com. (Accessed: 14 January 2022).</REFERENCE>
     public class CollisionSystem : IInitialiseICollisionResponder, IInitialiseIROIEntityDictionary, IUpdatable
@@ -34,6 +34,26 @@ namespace COMP3401_Project.ECSPackage.Systems
 
         // DECLARE an ICollisionResponder, name it '_collisionResponder':
         private ICollisionResponder _collisionResponder;
+
+        #endregion
+
+
+        #region CONSTRUCTOR
+
+        /// <summary>
+        /// Constructor for objects of CollisionSystem
+        /// </summary>
+        public CollisionSystem()
+        {
+            // INSTANTIATE _hitBoxCompDict as a new Dictionary<int, IContainHitBox>():
+            _hitBoxCompDict = new Dictionary<int, IContainHitBox>();
+
+            // INSTANTIATE _transformCompDict as a new Dictionary<int, IPosition>():
+            _transformCompDict = new Dictionary<int, IPosition>();
+
+            // INSTANTIATE _textureCompDict as a new Dictionary<int, ITexture>():
+            _textureCompDict = new Dictionary<int, ITexture>();
+        }
 
         #endregion
 
@@ -76,8 +96,8 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <param name="pGameTime"> holds reference to GameTime object </param>
         public void Update(GameTime pGameTime)
         {
-            // CALL CreateDictionaries() iteratively so references are not kept:
-            CreateDictionaries();
+            // CALL AddToCompDictionaries() iteratively so references are not kept:
+            AddToCompDictionaries();
 
             // FOREACH Collidable entity:
             foreach (int pInt in _hitBoxCompDict.Keys)
@@ -104,19 +124,18 @@ namespace COMP3401_Project.ECSPackage.Systems
         #region PRIVATE METHODS
 
         /// <summary>
-        /// Method which creates temporary dictionaries and adds current entities on screen to them
+        /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void CreateDictionaries()
+        private void AddToCompDictionaries()
         {
-            // INSTANTIATE _hitBoxCompDict as a new Dictionary<int, IContainHitBox>():
-            _hitBoxCompDict = new Dictionary<int, IContainHitBox>();
+            // CALL Clear() on _hitBoxCompDict, prevents entities being added multiple times:
+            _hitBoxCompDict.Clear();
 
-            // INSTANTIATE _transformCompDict as a new Dictionary<int, IPosition>():
-            _transformCompDict = new Dictionary<int, IPosition>();
+            // CALL Clear() on _transformCompDict, prevents entities being added multiple times:
+            _transformCompDict.Clear();
 
-            // INSTANTIATE _textureCompDict as a new Dictionary<int, ITexture>():
-            _textureCompDict = new Dictionary<int, ITexture>();
-
+            // CALL Clear() on _textureCompDict, prevents entities being added multiple times:
+            _textureCompDict.Clear();
 
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)
