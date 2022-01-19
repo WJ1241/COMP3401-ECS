@@ -15,9 +15,9 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Velocity Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 17/01/22
+    /// Date: 19/01/22
     /// </summary>
-    public class MovementSystem : IInitialiseDeleteDel, IInitialiseIROIEntityDictionary, IUpdatable
+    public class MovementSystem : IInitialiseIMovementBoundResponder, IInitialiseIROIEntityDictionary, IUpdatable
     {
         #region FIELD VARIABLES
 
@@ -29,6 +29,9 @@ namespace COMP3401_Project.ECSPackage.Systems
 
         // DECLARE an IDictionary<int, IVelocity>, name it '_velocityCompDict':
         private IDictionary<int, IVelocity> _velocityCompDict;
+
+        // DECLARE an IMovementBoundResponder, name it '_mmBoundResponder':
+        private IMovementBoundResponder _mmBoundResponder;
 
         // DECLARE a DeleteDelegate, name it '_terminate':
         private DeleteDelegate _terminate;
@@ -53,12 +56,16 @@ namespace COMP3401_Project.ECSPackage.Systems
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISEDELETEDEL
+        #region IMPLEMENTATION OF IINITIALISEIMOVEMENTBOUNDRESPONDER
 
-        public void Initialise(DeleteDelegate pDeleteDelegate)
+        /// <summary>
+        /// Initialises an object with an IMovementBoundResponder object
+        /// </summary>
+        /// <param name="pMmBoundResponder"> IMovementBoundResponder object </param>
+        public void Initialise(IMovementBoundResponder pMmBoundResponder) 
         {
-            // INITIALISE _terminate with value of pDeleteDelegate:
-            _terminate = pDeleteDelegate;
+            // INITIALISE _mmBoundResponder with reference to pMmBoundResponder:
+            _mmBoundResponder = pMmBoundResponder;
         }
 
         #endregion
@@ -96,7 +103,10 @@ namespace COMP3401_Project.ECSPackage.Systems
                 // CHANGE Position of TransformComponent, using VelocityComponent's speed and direction properties:
                 _transformCompDict[pInt].Position += _velocityCompDict[pInt].Speed * _velocityCompDict[pInt].Direction;
 
-                if (_transformCompDict[pInt].Position.X >= 1000)
+                // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
+                _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
+
+                if (_transformCompDict[pInt].Position.X >= 1900)
                 {
                     // CALL _terminate, passing pInt as a parameter:
                     _terminate(pInt);
@@ -114,30 +124,36 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// </summary>
         private void AddToCompDictionaries()
         {
-            // CALL Clear() on _transformCompDict, prevents entities being added multiple times:
+            // CALL Clear() on _transformCompDict, prevents components being added multiple times:
             _transformCompDict.Clear();
 
-            // CALL Clear() on _velocityCompDict, prevents entities being added multiple times:
+            // CALL Clear() on _velocityCompDict, prevents components being added multiple times:
             _velocityCompDict.Clear();
 
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)
             {
-                // FOREACH IComponent in currently selected entity's component dictionary:
-                foreach (IComponent pComponent in (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary().Values)
-                {
-                    // IF pComponent implements IPosition:
-                    if (pComponent is IPosition)
-                    {
-                        // ADD currently selected entity's IPosition Component to _transformCompDict:
-                        _transformCompDict.Add(_roEntityDict[pInt].UID, pComponent as IPosition);
-                    }
+                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
+                IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
 
-                    // IF pComponent requires movement:
-                    if (pComponent is IVelocity)
+                if (_tempCompDict.ContainsKey("VelocityComponent"))
+                {
+                    // FOREACH IComponent in currently selected entity's component dictionary:
+                    foreach (IComponent pComponent in _tempCompDict.Values)
                     {
-                        // ADD currently selected entity's ITexture Component to _velocityCompDict:
-                        _velocityCompDict.Add(_roEntityDict[pInt].UID, pComponent as IVelocity);
+                        // IF pComponent implements IPosition:
+                        if (pComponent is IPosition)
+                        {
+                            // ADD currently selected entity's IPosition Component to _transformCompDict:
+                            _transformCompDict.Add(_roEntityDict[pInt].UID, pComponent as IPosition);
+                        }
+
+                        // IF pComponent requires movement:
+                        if (pComponent is IVelocity)
+                        {
+                            // ADD currently selected entity's ITexture Component to _velocityCompDict:
+                            _velocityCompDict.Add(_roEntityDict[pInt].UID, pComponent as IVelocity);
+                        }
                     }
                 }
             }

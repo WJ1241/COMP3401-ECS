@@ -44,8 +44,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECSPackage\Components\LayerComponent.cs" />
     <Compile Include="ECSPackage\Components\HitBoxComponent.cs" />
     <Compile Include="ECSPackage\Components\Interfaces\IContainHitBox.cs" />
+    <Compile Include="ECSPackage\Components\Interfaces\ILayer.cs" />
     <Compile Include="ECSPackage\Components\Interfaces\IPlayer.cs" />
     <Compile Include="ECSPackage\Components\Interfaces\IVelocity.cs" />
     <Compile Include="ECSPackage\Components\PlayerComponent.cs" />
@@ -56,18 +58,23 @@
     <Compile Include="ECSPackage\Components\TransformComponent.cs" />
     <Compile Include="ECSPackage\Components\VelocityComponent.cs" />
     <Compile Include="ECSPackage\Delegates\Delegates.cs" />
+    <Compile Include="ECSPackage\Delegates\Interfaces\IInitialiseCreateDel.cs" />
     <Compile Include="ECSPackage\Delegates\Interfaces\IInitialiseDeleteDel.cs" />
     <Compile Include="ECSPackage\Entities\Entity.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IRtnROIComponentDictionary.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IEntity.cs" />
+    <Compile Include="ECSPackage\Exceptions\NullValueException.cs" />
     <Compile Include="ECSPackage\Exceptions\NullInstanceException.cs" />
     <Compile Include="ECSPackage\Factories\Factory.cs" />
     <Compile Include="ECSPackage\Factories\Interfaces\IFactory.cs" />
     <Compile Include="ECSPackage\Systems\CollisionSystem.cs" />
     <Compile Include="ECSPackage\Systems\InputSystem.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\ICollisionResponder.cs" />
+    <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseIMovementBoundResponder.cs" />
+    <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseIInputResponder.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseICollisionResponder.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInputResponder.cs" />
+    <Compile Include="ECSPackage\Systems\Interfaces\IMovementBoundResponder.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISceneManager.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISpawnEntity.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseIUpdatable.cs" />
@@ -81,6 +88,9 @@
     <Compile Include="ECSPackage\Systems\Managers\SceneManager.cs" />
     <Compile Include="ECSPackage\Systems\MovementSystem.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="PongPackage\Responders\PaddleInputResponder.cs" />
+    <Compile Include="PongPackage\Responders\PongEntityCollisionResponder.cs" />
+    <Compile Include="PongPackage\Responders\PongMovementBoundResponder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ECSPackage\Systems\DrawSystem.cs" />

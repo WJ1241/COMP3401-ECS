@@ -13,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses HitBox Components to test whether entities have collided with other entities
     /// Author: William Smith & Marc Price
-    /// Date: 17/01/22
+    /// Date: 19/01/22
     /// </summary>
     /// <REFERENCE> Price, M. (2021) ‘Session 16 - Collision Management’, Games Design & Engineering: Sessions. Available at: https://worcesterbb.blackboard.com. (Accessed: 14 January 2022).</REFERENCE>
     public class CollisionSystem : IInitialiseICollisionResponder, IInitialiseIROIEntityDictionary, IUpdatable
@@ -112,8 +112,12 @@ namespace COMP3401_Project.ECSPackage.Systems
                 // FOR LOOP, Iterates over count of _hitBoxCompDict + 1 so that second entity cannot collide with itself:
                 for (int j = i + 1; j < _hitBoxCompDict.Keys.Count; j++)
                 {
-                    // CALL 'CollideResponse()' passing two Entity IDs as parameters:
-                    CollideResponse(i, j);
+                    // IF First Entity (i) Collides with Second Entity (j):
+                    if (_hitBoxCompDict[i].HitBox.Intersects(_hitBoxCompDict[j].HitBox))
+                    {
+                        // CALL RespondToCollision() on _collisioResponder, passing the first (i) and second (j) collidable entities as parameters:
+                        _collisionResponder.RespondToCollision(_roEntityDict[i], _roEntityDict[j]);
+                    }
                 }
             }
         }
@@ -143,7 +147,7 @@ namespace COMP3401_Project.ECSPackage.Systems
                 // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
                 IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
 
-                // IF pComponent implements IPosition:
+                // IF _tempCompDict contains a HitBoxComponent:
                 if (_tempCompDict.ContainsKey("HitBoxComponent"))
                 {
                     // FOREACH IComponent in currently selected entity's component dictionary:
@@ -171,22 +175,6 @@ namespace COMP3401_Project.ECSPackage.Systems
                         }
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Called to check when two or more entities with HitBox Components have collided
-        /// </summary>
-        /// <param name="pEntityOne"> ID of 1st Entity </param>
-        /// <param name="pEntityTwo"> ID of 2nd Entity </param>
-        /// <CITATION> (Price, 2021) </CITATION>
-        private void CollideResponse(int pEntityOne, int pEntityTwo)
-        {
-            // IF First Entity Collides with Second Entity:
-            if (_hitBoxCompDict[pEntityOne].HitBox.Intersects(_hitBoxCompDict[pEntityTwo].HitBox))
-            {
-                // CALL RespondToCollision() on _collisioResponder, passing the first and second collidable entities as parameters:
-                _collisionResponder.RespondToCollision(_roEntityDict[pEntityOne], _roEntityDict[pEntityTwo]);
             }
         }
 

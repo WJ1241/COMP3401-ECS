@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,13 +15,14 @@ using COMP3401_Project.ECSPackage.Systems;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Managers;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
+using COMP3401_Project.PongPackage.Responders;
 
 namespace COMP3401_Project
 {
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 13/01/22
+    /// Date: 19/01/22
     /// </summary>
     public class Kernel : Game
     {
@@ -38,14 +40,23 @@ namespace COMP3401_Project
         // DECLARE a SpriteBatch, name it '_spriteBatch':
         private SpriteBatch _spriteBatch;
 
+        // DECLARE a Random, name it '_rand':
+        private Random _rand;
+
         // DECLARE a Vector2, name it '_screenSize':
         private Vector2 _screenSize;
+
+        // DECLARE an int, name it '_pongEntityID':
+        private int _pongEntityID;
 
         #endregion
 
 
         #region CONSTRUCTOR
 
+        /// <summary>
+        /// Constructor for objects of Kernel
+        /// </summary>
         public Kernel()
         {
             // INSTANTIATE _graphics as new GraphicsDeviceManager, passing Kernel as a parameter:
@@ -65,6 +76,12 @@ namespace COMP3401_Project
 
             // SET AllowUserResizing to true to allow User to configure window to suit their resolution:
             Window.AllowUserResizing = true;
+
+            // INSTANTIATE _rand as a new Random():
+            _rand = new Random();
+
+            // ASSIGN _pongEntityID with a value of 0:
+            _pongEntityID = 0;
         }
 
         #endregion
@@ -140,7 +157,7 @@ namespace COMP3401_Project
             #endregion
 
 
-            #region INITIALISING _SYSTEMLIST
+            #region INITIALISING SYSTEMS TO SCENEMANAGER
 
             #region DRAW SYSTEM
 
@@ -158,8 +175,43 @@ namespace COMP3401_Project
             // INSTANTIATE _tempUpdatable as new MovementSystem():
             _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
 
-            // INITIALISE _tempUpdatable with reference to _entityDict.Terminate() method:
-            (_tempUpdatable as IInitialiseDeleteDel).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
+            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+
+
+            #region IMOVEMENTBOUNDRESPONDER INITIALISATION
+
+
+            IMovementBoundResponder _mmBoundResponder = new PongMovementBoundResponder();
+
+
+            (_mmBoundResponder as IInitialiseCreateDel).Initialise(CreateBall);
+
+            // INITIALISE _mmBoundResponder with reference to _entityDict.Terminate() method:
+            (_mmBoundResponder as IInitialiseDeleteDel).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
+
+            // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (0,0):
+            _mmBoundResponder.MinXYBound = new Point(0);
+
+            // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (_screenSize.X,_screenSize.Y):
+            _mmBoundResponder.MaxXYBound = new Point((int)_screenSize.X, (int)_screenSize.Y);
+
+            #endregion
+
+            // INITIALISE _tempUpdatable with _mmBoundResponder:
+            (_tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
+
+
+            #endregion
+
+
+            #region INPUT SYSTEM
+
+            // INSTANTIATE _tempUpdatable as new MovementSystem():
+            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
+
+            // INITIALISE _tempUpdatable with a new PaddleInputResponder():
+            (_tempUpdatable as IInitialiseIInputResponder).Initialise(new PaddleInputResponder());
 
             // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
             (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
@@ -174,11 +226,14 @@ namespace COMP3401_Project
             // FOR LOOP for creating entities, stops before 'i' reaches 2:
             for (int i = 0; i < 2; i++)
             {
+                // ASSIGN _pongEntityID with value of 'i':
+                _pongEntityID = i;
+
                 // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
                 IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
 
                 // ASSIGN UID to _tempEntity:
-                _tempEntity.UID = i;
+                _tempEntity.UID = _pongEntityID;
 
                 // ADD _tempEntity as a value, and _tempEntity.UID as a key to _entityDict:
                 _entityDict.Add(_tempEntity.UID, _tempEntity);
@@ -201,7 +256,7 @@ namespace COMP3401_Project
 
             #region INITIALISING ENTITIES WITH COMPONENTS
 
-            #region ENTITY 0
+            #region PADDLE 1
 
             // ADD a new TransformComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
@@ -215,10 +270,16 @@ namespace COMP3401_Project
             // ADD a new VelocityComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
 
+            // ADD a new PlayerComponent to _entityDict[0]'s ComponentList:
+            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
+
+            // ADD a new LayerComponent to _entityDict[0]'s ComponentList:
+            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+
             #endregion
 
 
-            #region ENTITY 1
+            #region PADDLE 2
 
             // ADD a new TransformComponent to _entityDict[1]'s ComponentList:
             _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
@@ -232,6 +293,12 @@ namespace COMP3401_Project
             // ADD a new VelocityComponent to _entityDict[1]'s ComponentList:
             _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
 
+            // ADD a new PlayerComponent to _entityDict[1]'s ComponentList:
+            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
+
+            // ADD a new LayerComponent to _entityDict[1]'s ComponentList:
+            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+
             #endregion
 
             #endregion
@@ -239,30 +306,36 @@ namespace COMP3401_Project
 
             #region SETTING ENTITY COMPONENT VALUES
 
-            #region ENTITY 0
+            #region PADDLE 1
 
             // LOAD "ServerLogo" as the texture of _entityDict[0]'s HitBoxComponent:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("Server Logo");
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("paddle");
 
             // SET Speed of _entityDict[0]'s VelocityComponent:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 5;
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
 
-            // SET Direction of _entityDict[0]'s VelocityComponent:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(1);
+            // SET PlayerID of _entityDict[0]'s PlayerComponent to PlayerIndex.One:
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.One;
+
+            // SET Layer of _entityDict[0]'s LayerComponent to '4':
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #endregion
 
 
-            #region ENTITY 1
+            #region PADDLE 2
 
             // LOAD "ServerLogo" as the texture of _entityDict[1]'s HitBoxComponent:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("Server Logo");
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("paddle");
 
             // SET Speed of _entityDict[1]'s VelocityComponent:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 2;
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
 
-            // SET Direction of _entityDict[1]'s VelocityComponent:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(-1);
+            // SET PlayerID of _entityDict[1]'s PlayerComponent to PlayerIndex.Two:
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.Two;
+
+            // SET Layer of _entityDict[1]'s LayerComponent to '4':
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #endregion
 
@@ -271,11 +344,34 @@ namespace COMP3401_Project
 
             #region SPAWNING ENTITIES
 
-            // SPAWN _entityDict[0] with Position at the centre of screen:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], _screenSize / 2);
+            #region PADDLE 1
 
-            // SPAWN _entityDict[1] with Position at the top left corner of screen:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], _screenSize / _screenSize);
+            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from entity to be spawned on screen:
+            Texture2D _tempTexture = ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+
+            // SPAWN _entityDict[0] with Position at left side of screen with some space:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], new Vector2(_tempTexture.Width, (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+
+            #endregion
+
+
+            #region PADDLE 2
+
+            // INITIALISE _tempTexture with the Texture from _entityDict[1]:
+            _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+
+            // SPAWN _entityDict[1] with Position at right side of screen with some space:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_screenSize.X - (_tempTexture.Width * 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+
+            #endregion
+
+
+            #region BALL
+
+            // CALL CreateBall(), for all creation, initialisation and spawn logic of a Ball entity after constant non-replaceable entities e.g. Paddles are created:
+            CreateBall();
+
+            #endregion
 
             #endregion
 
@@ -324,6 +420,99 @@ namespace COMP3401_Project
 
             // CALL Draw() on base class, passing pGameTime as a parameter:
             base.Draw(pGameTime);
+        }
+
+        #endregion
+
+
+        #region PRIVATE METHODS
+
+        /// <summary>
+        /// Method which recreates a Ball entity to continue Pong after Player scores
+        /// </summary>
+        private void CreateBall()
+        {
+            #region CREATION
+
+            // INCREMENT _pongEntityID by 1:
+            _pongEntityID++;
+
+            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
+            IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
+
+            // ASSIGN UID to _tempEntity:
+            _tempEntity.UID = _pongEntityID;
+
+            // ADD _tempEntity as a value, and _tempEntity.UID as a key to _entityDict:
+            _entityDict.Add(_tempEntity.UID, _tempEntity);
+
+            #endregion
+
+
+            #region COMPONENT INITIALISATION
+
+            // ADD a new TransformComponent to _entityDict[_pongEntityID]'s ComponentList:
+            _entityDict[_pongEntityID].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
+
+            // ADD a new TextureComponent to _entityDict[_pongEntityID]'s ComponentList:
+            _entityDict[_pongEntityID].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
+
+            // ADD a new HitBoxComponent to _entityDict[_pongEntityID]'s ComponentList:
+            _entityDict[_pongEntityID].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
+
+            // ADD a new VelocityComponent to _entityDict[_pongEntityID]'s ComponentList:
+            _entityDict[_pongEntityID].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
+
+            // ADD a new LayerComponent to _entityDict[_pongEntityID]'s ComponentList:
+            _entityDict[_pongEntityID].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+
+            #endregion
+
+
+            #region SETTING COMPONENT VALUES
+
+            // LOAD "ServerLogo" as the texture of _entityDict[_pongEntityID]'s HitBoxComponent:
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("square");
+
+            // SET Speed of _entityDict[_pongEntityID]'s VelocityComponent:
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 5;
+
+            // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '3':
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
+
+            // DECLARE & INSTANTIATE a new Vector2, name it '_randDir', with X & Y values of '1':
+            Vector2 _randDir = new Vector2(1);
+
+            // IF _rand.Next() lands on '2'
+            if (_rand.Next(1, 3) == 2)
+            {
+                // MULTIPLY _randDir.X by '-1':
+                _randDir.X *= -1;
+            }
+
+            // IF _rand.Next() lands on '2'
+            if (_rand.Next(1, 3) == 2)
+            {
+                // MULTIPLY _randDir.Y by '-1':
+                _randDir.Y *= -1;
+            }
+
+            // SET Direction of _entityDict[_pongEntityID]'s VelocityComponent:
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(_randDir.X, _randDir.Y);
+
+            #endregion
+
+
+            #region SPAWN
+
+            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from entity to be spawned on screen:
+            Texture2D _tempTexture = ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+
+            // SPAWN _entityDict[_pongEntityID] with Position at the centre of screen:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[_pongEntityID], new Vector2((_screenSize.X / 2) - (_tempTexture.Width / 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+
+            #endregion
+
         }
 
         #endregion
