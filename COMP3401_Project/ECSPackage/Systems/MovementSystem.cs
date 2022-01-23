@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
-using COMP3401_Project.ECSPackage.Delegates;
-using COMP3401_Project.ECSPackage.Delegates.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
@@ -15,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Velocity Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 19/01/22
+    /// Date: 23/01/22
     /// </summary>
     public class MovementSystem : IInitialiseIMovementBoundResponder, IInitialiseIROIEntityDictionary, IUpdatable
     {
@@ -32,9 +30,6 @@ namespace COMP3401_Project.ECSPackage.Systems
 
         // DECLARE an IMovementBoundResponder, name it '_mmBoundResponder':
         private IMovementBoundResponder _mmBoundResponder;
-
-        // DECLARE a DeleteDelegate, name it '_terminate':
-        private DeleteDelegate _terminate;
 
         #endregion
 
@@ -100,17 +95,11 @@ namespace COMP3401_Project.ECSPackage.Systems
             // FOREACH Moveable entity:
             foreach (int pInt in _velocityCompDict.Keys)
             {
-                // CHANGE Position of TransformComponent, using VelocityComponent's speed and direction properties:
-                _transformCompDict[pInt].Position += _velocityCompDict[pInt].Speed * _velocityCompDict[pInt].Direction;
+                // CHANGE Position of TransformComponent, using VelocityComponent's velocity property:
+                _transformCompDict[pInt].Position += _velocityCompDict[pInt].Velocity;
 
                 // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
                 _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
-
-                if (_transformCompDict[pInt].Position.X >= 1900)
-                {
-                    // CALL _terminate, passing pInt as a parameter:
-                    _terminate(pInt);
-                }
             }
         }
 

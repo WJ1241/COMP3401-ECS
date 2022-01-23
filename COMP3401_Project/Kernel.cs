@@ -22,7 +22,7 @@ namespace COMP3401_Project
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 19/01/22
+    /// Date: 23/01/22
     /// </summary>
     public class Kernel : Game
     {
@@ -125,6 +125,9 @@ namespace COMP3401_Project
             // ADD a new Factory<IUpdatable>() to _serviceDict:
             _serviceDict.Add("UpdatableFactory", new Factory<IUpdatable>());
 
+            // ADD a new Factory<IResponder>() to _serviceDict:
+            _serviceDict.Add("ResponderFactory", new Factory<IResponder>());
+
             #endregion
 
 
@@ -178,13 +181,12 @@ namespace COMP3401_Project
             // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
             (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
 
-
             #region IMOVEMENTBOUNDRESPONDER INITIALISATION
 
+            // DECLARE & INSTANTIATE an IMovementBoundResponder as a new PongMovementBoundResponder, name it '_mmBoundResponder':
+            IMovementBoundResponder _mmBoundResponder = (_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongMovementBoundResponder>() as IMovementBoundResponder;
 
-            IMovementBoundResponder _mmBoundResponder = new PongMovementBoundResponder();
-
-
+            // INITIALISE _mmBoundResponder with reference to CreateBall() method:
             (_mmBoundResponder as IInitialiseCreateDel).Initialise(CreateBall);
 
             // INITIALISE _mmBoundResponder with reference to _entityDict.Terminate() method:
@@ -207,16 +209,31 @@ namespace COMP3401_Project
 
             #region INPUT SYSTEM
 
-            // INSTANTIATE _tempUpdatable as new MovementSystem():
+            // INSTANTIATE _tempUpdatable as new InputSystem():
             _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
 
             // INITIALISE _tempUpdatable with a new PaddleInputResponder():
-            (_tempUpdatable as IInitialiseIInputResponder).Initialise(new PaddleInputResponder());
+            (_tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
 
             // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
             (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
 
             #endregion
+
+
+            #region COLLISION SYSTEM
+
+            // INSTANTIATE _tempUpdatable as new CollisionSystem():
+            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
+
+            // INITIALISE _tempUpdatable with a new PongEntityCollisionResponder():
+            (_tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
+
+            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+
+            #endregion
+
 
             #endregion
 
@@ -437,6 +454,8 @@ namespace COMP3401_Project
             // INCREMENT _pongEntityID by 1:
             _pongEntityID++;
 
+            Console.WriteLine("UID is now " + _pongEntityID);
+
             // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
             IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
 
@@ -474,11 +493,10 @@ namespace COMP3401_Project
             // LOAD "ServerLogo" as the texture of _entityDict[_pongEntityID]'s HitBoxComponent:
             ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("square");
 
-            // SET Speed of _entityDict[_pongEntityID]'s VelocityComponent:
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 5;
-
             // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '3':
             ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
+
+            #region VELOCITY COMPONENT
 
             // DECLARE & INSTANTIATE a new Vector2, name it '_randDir', with X & Y values of '1':
             Vector2 _randDir = new Vector2(1);
@@ -497,8 +515,19 @@ namespace COMP3401_Project
                 _randDir.Y *= -1;
             }
 
-            // SET Direction of _entityDict[_pongEntityID]'s VelocityComponent:
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(_randDir.X, _randDir.Y);
+            // DECLARE & INITIALISE an IVelocity, give value of _entityDict[_pongEntityID]'s VelocityComponent, name it '_ballVelComp':
+            IVelocity _ballVelComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+
+            // SET Speed of _entityDict[_pongEntityID]'s VelocityComponent with value of '5':
+            _ballVelComp.Speed = 5;
+
+            // SET Direction of _entityDict[_pongEntityID]'s VelocityComponent with value of _randDir:
+            _ballVelComp.Direction = _randDir;
+
+            // SET Velocity of _entityDict[_pongEntityID]'s VelocityComponent with it's Speed Property multiplied by it's Direction Property:
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity = _ballVelComp.Speed * _ballVelComp.Direction;
+
+            #endregion
 
             #endregion
 

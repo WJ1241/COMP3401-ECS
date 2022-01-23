@@ -12,7 +12,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Interfaces
     /// Author: William Smith
     /// Date: 19/01/22
     /// </summary>
-    public interface IInputResponder
+    public interface IInputResponder : IResponder
     {
         #region METHODS
 

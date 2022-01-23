@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace COMP3401_Project.ECSPackage.Exceptions
 {
     /// <summary>
-    /// Exception class used for testing if an addressed object is without an instance.
+    /// Exception class used for testing whether a specified class exists in the Program
     /// Author: William Smith
-    /// Date: 24/10/21
+    /// Date: 28/12/21
     /// </summary>
-    public class NullInstanceException : Exception
+    public class ClassDoesNotExistException : Exception
     {
         /// <summary>
-        /// Constructor for objects of NullInstanceException, calls base 'Exception' constructor to pass 'pMessage' value
+        /// Constructor for objects of ClassDoesNotExistException, calls base 'Exception' constructor to pass 'pMessage' value
         /// </summary>
         /// <param name="pMessage"> string value used to display error message to user </param>
-        public NullInstanceException(string pMessage) : base(pMessage)
+        public ClassDoesNotExistException(string pMessage) : base(pMessage)
         {
 
         }

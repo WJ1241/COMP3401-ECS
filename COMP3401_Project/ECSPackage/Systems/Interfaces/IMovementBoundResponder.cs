@@ -13,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Interfaces
     /// Author: William Smith
     /// Date: 19/01/22
     /// </summary>
-    public interface IMovementBoundResponder
+    public interface IMovementBoundResponder : IResponder
     {
         #region METHODS
 

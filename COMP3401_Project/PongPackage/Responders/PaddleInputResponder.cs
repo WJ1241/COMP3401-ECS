@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
@@ -39,50 +40,68 @@ namespace COMP3401_Project.PongPackage.Responders
         /// <param name="pEntity"> Entity which needs update from player input </param>
         public void RespondToInput(IEntity pEntity)
         {
-            // DECLARE & INITIALISE a KeyboardState, name it '_kBState', give value of current Keyboard state:
-            KeyboardState _kBState = Keyboard.GetState();
-
-            // DECLARE & INITIALISE a PlayerIndex, name it '_currentPlayerNum', give value of current entity's PlayerID Property:
-            PlayerIndex _currentPlayerNum = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID;
-
-            // INSTANTIATE new Vector2, set as 0 to stop movement:
-            ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0);
-
-            // IF Player 1:
-            if (_currentPlayerNum == PlayerIndex.One)
+            // IF pEntity DOES HAVE a current instance:
+            if (pEntity != null)
             {
-                // IF W Key is down:
-                if (_kBState.IsKeyDown(Keys.W))
+                // DECLARE & INITIALISE a KeyboardState, name it '_kBState', give value of current Keyboard state:
+                KeyboardState _kBState = Keyboard.GetState();
+
+                // DECLARE & INITIALISE a PlayerIndex, name it '_currentPlayerNum', give value of current entity's PlayerID Property:
+                PlayerIndex _currentPlayerNum = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID;
+
+                // INSTANTIATE new Vector2, set as 0 to stop movement:
+                ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0);
+
+                // IF Player 1:
+                if (_currentPlayerNum == PlayerIndex.One)
                 {
-                    // SET direction of pEntity to '-1' to move upwards:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
+                    // IF W Key is down:
+                    if (_kBState.IsKeyDown(Keys.W))
+                    {
+                        // SET direction of pEntity to '-1' to move upwards:
+                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
+                    }
+
+                    // ELSE IF S Key is down:
+                    else if (_kBState.IsKeyDown(Keys.S))
+                    {
+                        // SET direction of pEntity to '1' to move downwards:
+                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                    }
                 }
 
-                // ELSE IF S Key is down:
-                else if (_kBState.IsKeyDown(Keys.S))
+                // ELSE IF Player 2:
+                else if (_currentPlayerNum == PlayerIndex.Two)
                 {
-                    // SET direction of pEntity to '1' to move downwards:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                    // IF Up Arrow Key is down:
+                    if (_kBState.IsKeyDown(Keys.Up))
+                    {
+                        // SET direction of pEntity to '-1' to move upwards:
+                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
+                    }
+
+                    // ELSE IF Down Arrow Key is down:
+                    else if (_kBState.IsKeyDown(Keys.Down))
+                    {
+                        // SET direction of pEntity to '1' to move downwards:
+                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                    }
                 }
+
+                // DECLARE & INITIALISE an IVelocity, give value of pEntity's Velocity Component, name it'_tempVelComp':
+                IVelocity _tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+
+                // ASSIGN value of _tempVelComp.Speed multiplied by _tempVelComp.Direction to _tempVelComp.Velocity:
+                _tempVelComp.Velocity = _tempVelComp.Speed * _tempVelComp.Direction;
             }
 
-            // ELSE IF Player 2:
-            else if (_currentPlayerNum == PlayerIndex.Two)
+            // ELSE (IF pEntity DOES NOT HAVE a current instance)
+            else
             {
-                // IF Up Arrow Key is down:
-                if (_kBState.IsKeyDown(Keys.Up))
-                {
-                    // SET direction of pEntity to '-1' to move upwards:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
-                }
-
-                // ELSE IF Down Arrow Key is down:
-                else if (_kBState.IsKeyDown(Keys.Down))
-                {
-                    // SET direction of pEntity to '1' to move downwards:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
-                }
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pEntity requiring user input does not have an active instance!");
             }
+            
         }
 
         #endregion

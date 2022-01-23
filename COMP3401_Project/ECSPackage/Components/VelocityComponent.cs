@@ -17,11 +17,14 @@ namespace COMP3401_Project.ECSPackage.Components
     {
         #region FIELD VARIABLES
 
-        // DECLARE an int, name it '_speed':
-        private int _speed;
+        // DECLARE an float, name it '_speed':
+        private float _speed;
 
         // DECLARE a Vector2, name it '_direction':
         private Vector2 _direction;
+
+        // DECLARE a Vector2, name it '_velocity':
+        private Vector2 _velocity;
 
         #endregion
 
@@ -31,7 +34,7 @@ namespace COMP3401_Project.ECSPackage.Components
         /// <summary>
         /// Property which gives caller read and write access to speed value
         /// </summary>
-        public int Speed
+        public float Speed
         {
             get
             {
@@ -60,6 +63,23 @@ namespace COMP3401_Project.ECSPackage.Components
                 // SET value of _direction to incoming value:
                 _direction = value;
             }
+        }
+
+        /// <summary>
+        /// Property which gives caller read and write access to velocity value
+        /// </summary>
+        public Vector2 Velocity
+        {
+            get
+            {
+                // RETURN value of _velocity:
+                return _velocity;
+            }
+            set
+            {
+                // SET value of of _velocity to incoming value:
+                _velocity = value;
+            } 
         }
 
         #endregion

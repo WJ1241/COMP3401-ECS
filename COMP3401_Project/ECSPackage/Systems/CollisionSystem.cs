@@ -23,6 +23,9 @@ namespace COMP3401_Project.ECSPackage.Systems
         // DECLARE an IReadOnlyDictionary<int, IEntity>, name it '_roEntityDict':
         private IReadOnlyDictionary<int, IEntity> _roEntityDict;
 
+        // DECLARE an IList<IEntity>, name it '_hitBoxEntList', prevents misaddressing issue in Collision FOR loop:
+        private IList<IEntity> _hitBoxEntList;
+
         // DECLARE an IDictionary<int, IContainHitBox>, name it '_hitBoxCompDict':
         private IDictionary<int, IContainHitBox> _hitBoxCompDict;
 
@@ -45,6 +48,9 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// </summary>
         public CollisionSystem()
         {
+            // INSTANTIATE _hitBoxEntList as a new List<IEntity>():
+            _hitBoxEntList = new List<IEntity>();
+
             // INSTANTIATE _hitBoxCompDict as a new Dictionary<int, IContainHitBox>():
             _hitBoxCompDict = new Dictionary<int, IContainHitBox>();
 
@@ -106,17 +112,20 @@ namespace COMP3401_Project.ECSPackage.Systems
                 _hitBoxCompDict[pInt].HitBox = new Rectangle((int)_transformCompDict[pInt].Position.X, (int)_transformCompDict[pInt].Position.Y, _textureCompDict[pInt].Texture.Width, _textureCompDict[pInt].Texture.Height);
             }
 
-            // FOR LOOP, Iterates over count of _hitBoxCompDict - 1 so that first entity cannot collide with itself:
-            for (int i = 0; i < (_hitBoxCompDict.Keys.Count - 1); i++)
+            // DECLARE an IList<IContainHitBox>, give value of _hitBoxCompDict.Values as a List:
+            IList<IContainHitBox> _tempHitBoxList = _hitBoxCompDict.Values.ToList();
+
+            // FOR LOOP, Iterates over count of _tempHitBoxList - 1 so that first entity cannot collide with itself:
+            for (int i = 0; i < (_tempHitBoxList.Count - 1); i++)
             {
-                // FOR LOOP, Iterates over count of _hitBoxCompDict + 1 so that second entity cannot collide with itself:
-                for (int j = i + 1; j < _hitBoxCompDict.Keys.Count; j++)
-                {
+                // FOR LOOP, Iterates over count of _tempHitBoxList + 1 so that second entity cannot collide with itself:
+                for (int j = i + 1; j < _tempHitBoxList.Count; j++)
+                { 
                     // IF First Entity (i) Collides with Second Entity (j):
-                    if (_hitBoxCompDict[i].HitBox.Intersects(_hitBoxCompDict[j].HitBox))
+                    if (_tempHitBoxList[i].HitBox.Intersects(_tempHitBoxList[j].HitBox))
                     {
-                        // CALL RespondToCollision() on _collisioResponder, passing the first (i) and second (j) collidable entities as parameters:
-                        _collisionResponder.RespondToCollision(_roEntityDict[i], _roEntityDict[j]);
+                        // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
+                        _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
                     }
                 }
             }
@@ -132,6 +141,9 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// </summary>
         private void AddToCompDictionaries()
         {
+            // CALL Clear() on _hitBoxCompDict, prevents entities being added multiple times and misaddressing old entities:
+            _hitBoxEntList.Clear();
+
             // CALL Clear() on _hitBoxCompDict, prevents entities being added multiple times:
             _hitBoxCompDict.Clear();
 
@@ -150,6 +162,9 @@ namespace COMP3401_Project.ECSPackage.Systems
                 // IF _tempCompDict contains a HitBoxComponent:
                 if (_tempCompDict.ContainsKey("HitBoxComponent"))
                 {
+                    // ADD _roEntityDict[pInt] to _hitBoxEntList:
+                    _hitBoxEntList.Add(_roEntityDict[pInt]);
+
                     // FOREACH IComponent in currently selected entity's component dictionary:
                     foreach (IComponent pComponent in _tempCompDict.Values)
                     {

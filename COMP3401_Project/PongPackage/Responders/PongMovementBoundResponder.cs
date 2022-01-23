@@ -91,23 +91,20 @@ namespace COMP3401_Project.PongPackage.Responders
             // IF pEntity is on Layer 3 (Non-Player Controlled Moveable Entity):
             if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer == 3)
             {
-                // DECLARE & INITIALISE a Vector2, name it '_tempDir', used for top and bottom bounds and reversing Y direction:
-                Vector2 _tempDir = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction;
+                // DECLARE & INITIALISE a Vector2, name it '_tempVel', used for top and bottom bounds and reversing Y velocity:
+                Vector2 _tempVel = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity;
 
                 #region Y AXIS
 
-                // IF pEntity is at the top of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y <= _minXYBounds.Y)
+                // IF pEntity is at the top or bottom of the screen:
+                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y <= _minXYBounds.Y
+                 || ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y + _tempTexture.Height >= _maxXYBounds.Y)
                 {
-                    // SET pEntity's Direction Property to current X direction and '1' for Y direction
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(_tempDir.X, 1);
-                }
+                    // MULTIPLY _tempVel.Y by '-1':
+                    _tempVel.Y *= -1;
 
-                // IF pEntity is at the bottom of the screen:
-                else if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y + _tempTexture.Height >= _maxXYBounds.Y)
-                {
-                    // SET pEntity's Direction Property to current X direction and '-1' for Y direction
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(_tempDir.X, -1);
+                    // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
+                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity = _tempVel;
                 }
 
                 #endregion
@@ -116,17 +113,8 @@ namespace COMP3401_Project.PongPackage.Responders
                 #region X AXIS
 
                 // IF pEntity has exited left side of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X <= _minXYBounds.X)
-                {
-                    // CALL _terminate, passing pInt as a parameter:
-                    _terminate(pEntity.UID);
-
-                    // CALL _create():
-                    _create();
-                }
-
-                // ELSE IF pEntity has exited right side of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X >= _maxXYBounds.X)
+                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X <= _minXYBounds.X
+                 || ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X >= _maxXYBounds.X - _tempTexture.Width)
                 {
                     // CALL _terminate, passing pInt as a parameter:
                     _terminate(pEntity.UID);

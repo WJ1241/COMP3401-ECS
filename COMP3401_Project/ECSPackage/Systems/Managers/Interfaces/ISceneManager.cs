@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using COMP3401_Project.ECSPackage.Services.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems.Managers.Interfaces
 {
@@ -11,7 +12,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers.Interfaces
     /// Author: William Smith
     /// Date: 13/01/22
     /// </summary>
-    public interface ISceneManager
+    public interface ISceneManager : IService
     {
         #region METHODS
 

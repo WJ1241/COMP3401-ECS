@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace COMP3401_Project.ECSPackage.Services.Interfaces
 {
     /// <summary>
-    /// Interface which allows implementations to be created and stored with related objects
+    /// Interface which allows implementations (Service Style e.g. Factories, Managers) to be created and stored with related objects
     /// Author: William Smith
     /// Date: 21/12/21
     /// </summary>

@@ -13,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Interfaces
     /// Author: William Smith
     /// Date: 14/01/22
     /// </summary>
-    public interface ICollisionResponder
+    public interface ICollisionResponder : IResponder
     {
         #region METHODS
 

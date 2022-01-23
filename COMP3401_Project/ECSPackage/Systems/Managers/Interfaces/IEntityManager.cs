@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Services.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems.Managers.Interfaces
 {
@@ -12,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers.Interfaces
     /// Author: William Smith
     /// Date: 09/01/22
     /// </summary>
-    public interface IEntityManager
+    public interface IEntityManager : IService
     {
         #region METHODS
 

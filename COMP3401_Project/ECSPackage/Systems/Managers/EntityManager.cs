@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Services.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems.Managers
@@ -14,7 +13,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
     /// Author: William Smith
     /// Date: 13/01/22
     /// </summary>
-    public class EntityManager : IService, IEntityManager, IInitialiseISceneManager, IRtnEntityDictionary
+    public class EntityManager : IEntityManager, IInitialiseISceneManager, IRtnEntityDictionary
     {
         #region FIELD VARIABLES
 

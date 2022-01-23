@@ -63,7 +63,8 @@
     <Compile Include="ECSPackage\Entities\Entity.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IRtnROIComponentDictionary.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IEntity.cs" />
-    <Compile Include="ECSPackage\Exceptions\NullValueException.cs" />
+    <Compile Include="ECSPackage\Exceptions\ClassDoesNotExistException.cs" />
+    <Compile Include="ECSPackage\Exceptions\InvalidValueException.cs" />
     <Compile Include="ECSPackage\Exceptions\NullInstanceException.cs" />
     <Compile Include="ECSPackage\Factories\Factory.cs" />
     <Compile Include="ECSPackage\Factories\Interfaces\IFactory.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseICollisionResponder.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInputResponder.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IMovementBoundResponder.cs" />
+    <Compile Include="ECSPackage\Systems\Interfaces\IResponder.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISceneManager.cs" />
     <Compile Include="ECSPackage\Systems\Managers\Interfaces\IInitialiseISpawnEntity.cs" />
     <Compile Include="ECSPackage\Systems\Interfaces\IInitialiseIUpdatable.cs" />

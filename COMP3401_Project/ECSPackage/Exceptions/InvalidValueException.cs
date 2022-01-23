@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace COMP3401_Project.ECSPackage.Exceptions
 {
     /// <summary>
-    /// Exception class used for testing if an addressed object is without an instance.
+    /// Exception class used for testing if an addressed class contains a value that is not valid for the chosen situation
     /// Author: William Smith
     /// Date: 24/10/21
     /// </summary>
-    public class NullInstanceException : Exception
+    public class InvalidValueException : Exception
     {
         /// <summary>
-        /// Constructor for objects of NullInstanceException, calls base 'Exception' constructor to pass 'pMessage' value
+        /// Constructor for objects of InvalidValueException, calls base 'Exception' constructor to pass 'pMessage' value
         /// </summary>
         /// <param name="pMessage"> string value used to display error message to user </param>
-        public NullInstanceException(string pMessage) : base(pMessage)
+        public InvalidValueException(string pMessage) : base(pMessage)
         {
 
         }

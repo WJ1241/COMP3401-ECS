@@ -17,7 +17,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
     /// Author: William Smith
     /// Date: 13/01/22
     /// </summary>
-    public class SceneManager : IService, IDraw, ISceneManager, IInitialiseISpawnEntity, IInitialiseIUpdatable, ISpawnEntity, IUpdatable
+    public class SceneManager : IDraw, ISceneManager, IInitialiseISpawnEntity, IInitialiseIUpdatable, ISpawnEntity, IUpdatable
     {
         #region FIELD VARIABLES
 
