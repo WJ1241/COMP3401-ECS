@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Delegates;
 using COMP3401_Project.ECSPackage.Delegates.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.PongPackage.Responders
@@ -16,7 +13,7 @@ namespace COMP3401_Project.PongPackage.Responders
     /// <summary>
     /// Class which responds to movement of any Pong entity
     /// Author: William Smith
-    /// Date: 19/01/22
+    /// Date: 30/01/22
     /// </summary>
     public class PongMovementBoundResponder : IInitialiseCreateDel, IInitialiseDeleteDel, IMovementBoundResponder
     {
@@ -67,6 +64,10 @@ namespace COMP3401_Project.PongPackage.Responders
 
         #region IMPLEMENTATION OF IINITIALISEDELETEDEL
 
+        /// <summary>
+        /// Initialises an object with a 'DeleteDelegate' method
+        /// </summary>
+        /// <param name="pDeleteDelegate"> Delete Method </param>
         public void Initialise(DeleteDelegate pDeleteDelegate)
         {
             // INITIALISE _terminate with value of pDeleteDelegate:
@@ -83,80 +84,113 @@ namespace COMP3401_Project.PongPackage.Responders
         /// </summary>
         public void RespondToBound(IEntity pEntity)
         {
-            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', give value of pEntity's Texture Property:
-            Texture2D _tempTexture = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
-
-            #region LAYER 3
-
-            // IF pEntity is on Layer 3 (Non-Player Controlled Moveable Entity):
-            if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer == 3)
+            // IF pEntity DOES HAVE an active instance:
+            if (pEntity != null)
             {
-                // DECLARE & INITIALISE a Vector2, name it '_tempVel', used for top and bottom bounds and reversing Y velocity:
-                Vector2 _tempVel = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity;
+                // DECLARE & INITIALISE an IPosition, name it '_tempTfComp', give instance of pEntity's TransformComponent:
+                IPosition _tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
 
-                #region Y AXIS
+                // DECLARE & INITIALISE an IPosition, name it '_tempVelComp', give instance of pEntity's VelocityComponent:
+                IVelocity _tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-                // IF pEntity is at the top or bottom of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y <= _minXYBounds.Y
-                 || ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y + _tempTexture.Height >= _maxXYBounds.Y)
+                // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', give value of pEntity's Texture Property:
+                Texture2D _tempTexture = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+
+                // DECLARE & INITIALISE an ILayer, name it '_tempLayer', give value of pEntity's Layer Property:
+                int _tempLayer = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer;
+
+                #region LAYER 4 (BALL)
+
+                // IF pEntity is on Layer 4 (Non-Player Controlled Moveable Entity):
+                if (_tempLayer == 4)
                 {
-                    // MULTIPLY _tempVel.Y by '-1':
-                    _tempVel.Y *= -1;
+                    // DECLARE & INITIALISE a Vector2, name it '_tempVel', used for top and bottom bounds and reversing Y velocity:
+                    Vector2 _tempVel = _tempVelComp.Velocity;
 
-                    // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity = _tempVel;
+                    #region Y AXIS
+
+                    // IF pEntity is at the top or bottom of the screen:
+                    if (_tempTfComp.Position.Y <= _minXYBounds.Y || _tempTfComp.Position.Y + _tempTexture.Height >= _maxXYBounds.Y)
+                    {
+                        // MULTIPLY _tempVel.Y by '-1':
+                        _tempVel.Y *= -1;
+
+                        // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
+                        _tempVelComp.Velocity = _tempVel;
+                    }
+
+                    #endregion
+
+
+                    #region X AXIS
+
+                    // IF pEntity has exited left side of the screen:
+                    if (_tempTfComp.Position.X <= _minXYBounds.X || _tempTfComp.Position.X >= _maxXYBounds.X - _tempTexture.Width)
+                    {
+                        // TRY checking if pEntity can be terminated:
+                        try
+                        {
+                            // CALL _terminate, passing pInt as a parameter:
+                            _terminate(pEntity.UID);
+                        }
+                        // CATCH InvalidValueException from termination:
+                        catch (InvalidValueException e)
+                        {
+                            // WRITE exception message to console:
+                            Console.WriteLine(e.Message);
+                        }
+
+                        // CALL _create():
+                        _create();
+                    }
+
+                    #endregion
                 }
 
                 #endregion
 
 
-                #region X AXIS
+                #region LAYER 5 (PADDLE)
 
-                // IF pEntity has exited left side of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X <= _minXYBounds.X
-                 || ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.X >= _maxXYBounds.X - _tempTexture.Width)
+                // IF pEntity is on Layer 5 (Player Controlled Moveable Entity):
+                if (_tempLayer == 5)
                 {
-                    // CALL _terminate, passing pInt as a parameter:
-                    _terminate(pEntity.UID);
+                    // DECLARE & INITIALISE a Vector2, name it '_tempPos', used for top and bottom bounds and stopping movement:
+                    Vector2 _tempPos = _tempTfComp.Position;
 
-                    // CALL _create():
-                    _create();
+                    // DECLARE & INITIALISE a Vector2, name it '_tempOrigin', used for keeping entity on screen:
+                    Vector2 _tempOrigin = (_tempTfComp as IRotation).Origin;
+
+                    #region Y AXIS
+
+                    // IF pEntity is at the top of the screen:
+                    if (_tempPos.Y - _tempOrigin.Y <= _minXYBounds.Y)
+                    {
+                        // SET _tempPos.Y to the top of the Y axis:
+                        _tempPos.Y = _minXYBounds.Y + _tempOrigin.Y;
+                    }
+
+                    // ELSE IF pEntity is at the bottom of the screen:
+                    else if (_tempPos.Y + _tempOrigin.Y >= _maxXYBounds.Y)
+                    {
+                        // SET _tempPos.Y to the bottom of the Y axis:
+                        _tempPos.Y = _maxXYBounds.Y - _tempOrigin.Y;
+                    }
+
+                    // RE-ASSIGN value of _tempPos to pEntity's TransformComponent:
+                    _tempTfComp.Position = _tempPos;
+
+                    #endregion
                 }
 
                 #endregion
             }
-
-            #endregion
-
-
-            #region LAYER 4
-
-            // IF pEntity is on Layer 4 (Player Controlled Moveable Entity):
-            if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer == 4)
+            // IF pEntity DOES NOT HAVE an active instance:
+            else
             {
-                // DECLARE & INITIALISE a Vector2, name it '_tempPos', used for top and bottom bounds and stopping movement:
-                Vector2 _tempPos = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position;
-
-                #region Y AXIS
-
-                // IF pEntity is at the top of the screen:
-                if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y <= _minXYBounds.Y)
-                {
-                    // SET pEntity's Position property to current X Position, and Y Position at the top of the Y axis:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position = new Vector2(_tempPos.X, _minXYBounds.Y);
-                }
-
-                // ELSE IF pEntity is at the bottom of the screen:
-                else if (((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position.Y +_tempTexture.Height >= _maxXYBounds.Y)
-                {
-                    // SET pEntity's Position property to current X Position, and Y Position at the bottom of the Y axis:
-                    ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position = new Vector2(_tempPos.X, _maxXYBounds.Y - _tempTexture.Height);
-                }
-
-                #endregion
+                // THROW new NullInstanceException:
+                throw new NullInstanceException("ERROR: pEntity does not have an active instance!");
             }
-
-            #endregion
         }
 
         /// <summary>
@@ -184,6 +218,5 @@ namespace COMP3401_Project.PongPackage.Responders
         }
 
         #endregion
-
     }
 }

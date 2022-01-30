@@ -44,6 +44,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECSPackage\Components\Interfaces\IRotation.cs" />
     <Compile Include="ECSPackage\Components\LayerComponent.cs" />
     <Compile Include="ECSPackage\Components\HitBoxComponent.cs" />
     <Compile Include="ECSPackage\Components\Interfaces\IContainHitBox.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="ECSPackage\Systems\Managers\SceneGraph.cs" />
     <Compile Include="ECSPackage\Systems\Managers\SceneManager.cs" />
     <Compile Include="ECSPackage\Systems\MovementSystem.cs" />
+    <Compile Include="ECSPackage\Systems\System.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="PongPackage\Responders\PaddleInputResponder.cs" />
     <Compile Include="PongPackage\Responders\PongEntityCollisionResponder.cs" />

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems
@@ -14,14 +11,11 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Texture Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 17/01/22
+    /// Date: 30/01/22
     /// </summary>
-    public class DrawSystem : IInitialiseIROIEntityDictionary, IDraw, IUpdatable
+    public class DrawSystem : System, IDraw
     {
         #region FIELD VARIABLES
-
-        // DECLARE an IReadOnlyDictionary<int, IEntity>, name it '_roEntityDict':
-        private IReadOnlyDictionary<int, IEntity> _roEntityDict;
 
         // DECLARE an IDictionary<int, IPosition>, name it '_transformCompDict':
         private IDictionary<int, IPosition> _transformCompDict;
@@ -49,21 +43,6 @@ namespace COMP3401_Project.ECSPackage.Systems
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISEIROIENTITYDICTIONARY
-
-        /// <summary>
-        /// Method which initialises caller with an IReadOnlyDictionary<int, IEntity> instance
-        /// </summary>
-        /// <param name="pIRODict"> Instance of IReadOnlyDictionary<int, IEntity> </param>
-        public void Initialise(IReadOnlyDictionary<int, IEntity> pIRODict)
-        {
-            // INITIALISE _roEntityDict with instance of pIRODict:
-            _roEntityDict = pIRODict;
-        }
-
-        #endregion
-
-
         #region IMPLEMENTATION OF IDRAW
 
         /// <summary>
@@ -75,11 +54,21 @@ namespace COMP3401_Project.ECSPackage.Systems
             // CALL Begin() on pSpriteBatch to allow entities with Draw Components to be drawn on screen:
             pSpriteBatch.Begin();
 
-            // FOREACH UID in _textureCompDict:
-            foreach (int pInt in _textureCompDict.Keys)
+            // IF _textureCompDict DOES HAVE an active instance:
+            if (_textureCompDict != null)
             {
-                // DRAW given texture, given location, and colour:
-                pSpriteBatch.Draw(_textureCompDict[pInt].Texture, _transformCompDict[pInt].Position, Color.AntiqueWhite);
+                // FOREACH UID in _textureCompDict:
+                foreach (int pInt in _textureCompDict.Keys)
+                {
+                    // DRAW given texture, given location, colour, rotation and origin:
+                    pSpriteBatch.Draw(_textureCompDict[pInt].Texture, _transformCompDict[pInt].Position, null, Color.AntiqueWhite, (_transformCompDict[pInt] as IRotation).RotationAngle, (_transformCompDict[pInt] as IRotation).Origin, 1f, SpriteEffects.None, 1f);
+                }
+            }
+            // IF _textureCompDict DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: _textureCompDict does not have an active instance!");
             }
 
             // CALL End() on pSpriteBatch to signal end of entity drawing iteration:
@@ -95,7 +84,7 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// Updates system when a frame has been rendered on screen
         /// </summary>
         /// <param name="pGameTime"> holds reference to GameTime object </param>
-        public void Update(GameTime pGameTime)
+        public override void Update(GameTime pGameTime)
         {
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
@@ -109,7 +98,7 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <summary>
         /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void AddToCompDictionaries()
+        protected override void AddToCompDictionaries()
         {
             // CALL Clear() on _transformCompDict, prevents entities being added multiple times:
             _transformCompDict.Clear();

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems
@@ -13,14 +11,11 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Player Components to allow an entity to be controlled by a User/Player
     /// Author: William Smith
-    /// Date: 19/01/22
+    /// Date: 30/01/22
     /// </summary>
-    public class InputSystem : IInitialiseIInputResponder, IInitialiseIROIEntityDictionary, IUpdatable
+    public class InputSystem : System, IInitialiseIInputResponder
     {
         #region FIELD VARIABLES
-
-        // DECLARE an IReadOnlyDictionary<int, IEntity>, name it '_roEntityDict':
-        private IReadOnlyDictionary<int, IEntity> _roEntityDict;
 
         // DECLARE an IDictionary<int, IEntity>, name it '_playerEntityDict':
         private IDictionary<int, IEntity> _playerEntityDict;
@@ -53,23 +48,18 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <param name="pInputResponder"> IInputResponder object </param>
         public void Initialise(IInputResponder pInputResponder) 
         {
-            // INITIALISE _inputResponder with reference to pInputResponder:
-            _inputResponder = pInputResponder;
-        }
-
-        #endregion
-
-
-        #region IMPLEMENTATION OF IINITIALISEIROIENTITYDICTIONARY
-
-        /// <summary>
-        /// Method which initialises caller with an IReadOnlyDictionary<int, IEntity> instance
-        /// </summary>
-        /// <param name="pIRODict"> Instance of IReadOnlyDictionary<int, IEntity> </param>
-        public void Initialise(IReadOnlyDictionary<int, IEntity> pIRODict)
-        {
-            // INITIALISE _roEntityDict with instance of pIRODict:
-            _roEntityDict = pIRODict;
+            // IF pInputResponder DOES HAVE an active instance:
+            if (pInputResponder != null)
+            {
+                // INITIALISE _inputResponder with reference to pInputResponder:
+                _inputResponder = pInputResponder;
+            }
+            // IF pInputResponder DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pInputResponder does not have active instance!");
+            }
         }
 
         #endregion
@@ -81,16 +71,36 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// Updates system when a frame has been rendered on screen
         /// </summary>
         /// <param name="pGameTime"> holds reference to GameTime object </param>
-        public void Update(GameTime pGameTime)
+        public override void Update(GameTime pGameTime)
         {
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
 
-            // FOREACH IEntity object in _playerEntityDict.Values:
-            foreach (IEntity pEntity in _playerEntityDict.Values)
+            // IF _playerEntityDict DOES HAVE an active instance:
+            if (_playerEntityDict != null)
             {
-                // CALL RespondToInput on _inputResponder, passing pEntity as a parameter, constantly being called so player input is always detected:
-                _inputResponder.RespondToInput(pEntity);
+                // FOREACH IEntity object in _playerEntityDict.Values:
+                foreach (IEntity pEntity in _playerEntityDict.Values)
+                {
+                    // TRY checking if RespondToInput() throws a NullInstanceException:
+                    try
+                    {
+                        // CALL RespondToInput on _inputResponder, passing pEntity as a parameter, constantly being called so player input is always detected:
+                        _inputResponder.RespondToInput(pEntity);
+                    }
+                    // CATCH 
+                    catch (NullInstanceException e)
+                    {
+                        // WRITE exception message to console:
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
+            // IF _playerEntityDict DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: _playerEntityDict does not have an active instance!");
             }
         }
 
@@ -102,7 +112,7 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <summary>
         /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void AddToCompDictionaries()
+        protected override void AddToCompDictionaries()
         {
             // CALL Clear() on _playerEntityDict, prevents entities being added multiple times:
             _playerEntityDict.Clear();
@@ -132,7 +142,6 @@ namespace COMP3401_Project.ECSPackage.Systems
                     _playerEntityDict.Add(_roEntityDict[pInt].UID, _roEntityDict[pInt]);
                 }
                 */
-
             }
         }
 

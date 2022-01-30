@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems
@@ -13,14 +14,11 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Velocity Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 23/01/22
+    /// Date: 30/01/22
     /// </summary>
-    public class MovementSystem : IInitialiseIMovementBoundResponder, IInitialiseIROIEntityDictionary, IUpdatable
+    public class MovementSystem : System, IInitialiseIMovementBoundResponder
     {
         #region FIELD VARIABLES
-
-        // DECLARE an IReadOnlyDictionary<int, IEntity>, name it '_roEntityDict':
-        private IReadOnlyDictionary<int, IEntity> _roEntityDict;
 
         // DECLARE an IDictionary<int, IPosition>, name it '_transformCompDict':
         private IDictionary<int, IPosition> _transformCompDict;
@@ -59,23 +57,18 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <param name="pMmBoundResponder"> IMovementBoundResponder object </param>
         public void Initialise(IMovementBoundResponder pMmBoundResponder) 
         {
-            // INITIALISE _mmBoundResponder with reference to pMmBoundResponder:
-            _mmBoundResponder = pMmBoundResponder;
-        }
-
-        #endregion
-
-
-        #region IMPLEMENTATION OF IINITIALISEIROIENTITYDICTIONARY
-
-        /// <summary>
-        /// Method which initialises caller with an IReadOnlyDictionary<int, IEntity> instance
-        /// </summary>
-        /// <param name="pIRODict"> Instance of IReadOnlyDictionary<int, IEntity> </param>
-        public void Initialise(IReadOnlyDictionary<int, IEntity> pIRODict)
-        {
-            // INITIALISE _roEntityDict with instance of pIRODict:
-            _roEntityDict = pIRODict;
+            // IF pMmBoundResponder DOES HAVE an active instance:
+            if (pMmBoundResponder != null)
+            {
+                // INITIALISE _mmBoundResponder with reference to pMmBoundResponder:
+                _mmBoundResponder = pMmBoundResponder;
+            }
+            // IF pMmBoundResponder DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pMmBoundResponder does not have active instance!");
+            }
         }
 
         #endregion
@@ -87,31 +80,51 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// Updates system when a frame has been rendered on screen
         /// </summary>
         /// <param name="pGameTime"> holds reference to GameTime object </param>
-        public void Update(GameTime pGameTime)
+        public override void Update(GameTime pGameTime)
         {
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
 
-            // FOREACH Moveable entity:
-            foreach (int pInt in _velocityCompDict.Keys)
+            // IF _velocityCompDict DOES HAVE an active instance:
+            if (_velocityCompDict != null)
             {
-                // CHANGE Position of TransformComponent, using VelocityComponent's velocity property:
-                _transformCompDict[pInt].Position += _velocityCompDict[pInt].Velocity;
+                // FOREACH Moveable entity:
+                foreach (int pInt in _velocityCompDict.Keys)
+                {
+                    // CHANGE Position of TransformComponent, using VelocityComponent's velocity property:
+                    _transformCompDict[pInt].Position += _velocityCompDict[pInt].Velocity;
 
-                // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
-                _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
+                    // TRY checking if RespondToBound() throws a NullInstanceException:
+                    try
+                    {
+                        // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
+                        _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
+                    }
+                    // CATCH NullInstanceException from RespondToBound():
+                    catch (NullInstanceException e)
+                    {
+                        // WRITE exception message to console:
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
+            // IF _velocityCompDict DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: _velocityCompDict does not have an active instance!");
             }
         }
 
         #endregion
 
 
-        #region PRIVATE METHODS
+        #region INHERITED FROM SYSTEM
 
         /// <summary>
         /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void AddToCompDictionaries()
+        protected override void AddToCompDictionaries()
         {
             // CALL Clear() on _transformCompDict, prevents components being added multiple times:
             _transformCompDict.Clear();

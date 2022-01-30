@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems
@@ -13,15 +12,12 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses HitBox Components to test whether entities have collided with other entities
     /// Author: William Smith & Marc Price
-    /// Date: 19/01/22
+    /// Date: 30/01/22
     /// </summary>
     /// <REFERENCE> Price, M. (2021) ‘Session 16 - Collision Management’, Games Design & Engineering: Sessions. Available at: https://worcesterbb.blackboard.com. (Accessed: 14 January 2022).</REFERENCE>
-    public class CollisionSystem : IInitialiseICollisionResponder, IInitialiseIROIEntityDictionary, IUpdatable
+    public class CollisionSystem : System, IInitialiseICollisionResponder
     {
         #region FIELD VARIABLES
-
-        // DECLARE an IReadOnlyDictionary<int, IEntity>, name it '_roEntityDict':
-        private IReadOnlyDictionary<int, IEntity> _roEntityDict;
 
         // DECLARE an IList<IEntity>, name it '_hitBoxEntList', prevents misaddressing issue in Collision FOR loop:
         private IList<IEntity> _hitBoxEntList;
@@ -72,23 +68,18 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <param name="pCollisionResponder"> ICollisionResponder object </param>
         public void Initialise(ICollisionResponder pCollisionResponder)
         {
-            // INITIALISE _collisionResponder with instance of pCollisionResponder:
-            _collisionResponder = pCollisionResponder;
-        }
-
-        #endregion
-
-
-        #region IMPLEMENTATION OF IINITIALISEIROIENTITYDICTIONARY
-
-        /// <summary>
-        /// Method which initialises caller with an IReadOnlyDictionary<int, IEntity> instance
-        /// </summary>
-        /// <param name="pIRODict"> Instance of IReadOnlyDictionary<int, IEntity> </param>
-        public void Initialise(IReadOnlyDictionary<int, IEntity> pIRODict)
-        {
-            // INITIALISE _roEntityDict with instance of pIRODict:
-            _roEntityDict = pIRODict;
+            // IF pCollisionResponder DOES HAVE an active instance:
+            if (pCollisionResponder != null)
+            {
+                // INITIALISE _collisionResponder with instance of pCollisionResponder:
+                _collisionResponder = pCollisionResponder;
+            }
+            // IF pCollisionResponder DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pCollisionResponder does not have active instance!");
+            }
         }
 
         #endregion
@@ -100,7 +91,7 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// Updates system when a frame has been rendered on screen
         /// </summary>
         /// <param name="pGameTime"> holds reference to GameTime object </param>
-        public void Update(GameTime pGameTime)
+        public override void Update(GameTime pGameTime)
         {
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
@@ -108,8 +99,10 @@ namespace COMP3401_Project.ECSPackage.Systems
             // FOREACH Collidable entity:
             foreach (int pInt in _hitBoxCompDict.Keys)
             {
-                // SET HitBox property of HitBoxComponent to a new Rectangle created using TransformComponent's Position property and TextureComponent's Texture property:
-                _hitBoxCompDict[pInt].HitBox = new Rectangle((int)_transformCompDict[pInt].Position.X, (int)_transformCompDict[pInt].Position.Y, _textureCompDict[pInt].Texture.Width, _textureCompDict[pInt].Texture.Height);
+                // SET HitBox property of HitBoxComponent to a new Rectangle created using TransformComponent's Position property and TextureComponent's Texture property, takes away Origin due to actual Position being different to draw Position:
+                _hitBoxCompDict[pInt].HitBox = new Rectangle((int)_transformCompDict[pInt].Position.X - (int)(_transformCompDict[pInt] as IRotation).Origin.X, 
+                                                             (int)_transformCompDict[pInt].Position.Y - (int)(_transformCompDict[pInt] as IRotation).Origin.Y,
+                                                             _textureCompDict[pInt].Texture.Width, _textureCompDict[pInt].Texture.Height);
             }
 
             // DECLARE an IList<IContainHitBox>, give value of _hitBoxCompDict.Values as a List:
@@ -124,8 +117,18 @@ namespace COMP3401_Project.ECSPackage.Systems
                     // IF First Entity (i) Collides with Second Entity (j):
                     if (_tempHitBoxList[i].HitBox.Intersects(_tempHitBoxList[j].HitBox))
                     {
-                        // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
-                        _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
+                        // TRY checking if RespondToCollision throws a NullInstanceException:
+                        try
+                        {
+                            // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
+                            _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
+                        }
+                        // CATCH NullInstanceException from RespondToCollision:
+                        catch (NullInstanceException e)
+                        {
+                            // WRITE exception message to console:
+                            Console.WriteLine(e.Message);
+                        }
                     }
                 }
             }
@@ -139,7 +142,7 @@ namespace COMP3401_Project.ECSPackage.Systems
         /// <summary>
         /// Method which adds temporary current component references to local component dictionaries
         /// </summary>
-        private void AddToCompDictionaries()
+        protected override void AddToCompDictionaries()
         {
             // CALL Clear() on _hitBoxCompDict, prevents entities being added multiple times and misaddressing old entities:
             _hitBoxEntList.Clear();

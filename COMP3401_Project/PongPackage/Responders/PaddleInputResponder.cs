@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
@@ -15,7 +11,7 @@ namespace COMP3401_Project.PongPackage.Responders
     /// <summary>
     /// Class which responds to user input to control Paddle on screen
     /// Author: William Smith
-    /// Date: 19/01/22
+    /// Date: 30/01/22
     /// </summary>
     public class PaddleInputResponder : IInputResponder
     {
@@ -46,6 +42,12 @@ namespace COMP3401_Project.PongPackage.Responders
                 // DECLARE & INITIALISE a KeyboardState, name it '_kBState', give value of current Keyboard state:
                 KeyboardState _kBState = Keyboard.GetState();
 
+                // DECLARE & INITIALISE an IRotation, name it '_tempTfComp', give instance of pEntity's TransformComponent:
+                IRotation _tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation;
+
+                // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of pEntity's TextureComponent:
+                ITexture _tempTexComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+
                 // DECLARE & INITIALISE a PlayerIndex, name it '_currentPlayerNum', give value of current entity's PlayerID Property:
                 PlayerIndex _currentPlayerNum = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID;
 
@@ -55,36 +57,68 @@ namespace COMP3401_Project.PongPackage.Responders
                 // IF Player 1:
                 if (_currentPlayerNum == PlayerIndex.One)
                 {
-                    // IF W Key is down:
-                    if (_kBState.IsKeyDown(Keys.W))
-                    {
-                        // SET direction of pEntity to '-1' to move upwards:
-                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
-                    }
+                    // SET Texture of pEntity's TextureComponent to "Paddle1_DFLT, works for idling":
+                    _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
 
-                    // ELSE IF S Key is down:
-                    else if (_kBState.IsKeyDown(Keys.S))
+                    // IF W OR S Key is down:
+                    if (_kBState.IsKeyDown(Keys.W) || _kBState.IsKeyDown(Keys.S))
                     {
-                        // SET direction of pEntity to '1' to move downwards:
-                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                        // SET Texture of pEntity's TextureComponent to "Paddle1_INPT":
+                        _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_INPT"];
+
+                        // IF W Key is down:
+                        if (_kBState.IsKeyDown(Keys.W))
+                        {
+                            // SET value of pEntity's TransformComponent's RotationAngle Property to '0', measured in radians:
+                            _tempTfComp.RotationAngle = 0;
+
+                            // SET direction of pEntity to '-1' to move upwards:
+                             ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
+                        }
+
+                        // ELSE IF S Key is down:
+                        else if (_kBState.IsKeyDown(Keys.S))
+                        {
+                            // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians:
+                            _tempTfComp.RotationAngle = (float)Math.PI;
+
+                            // SET direction of pEntity to '1' to move downwards:
+                            ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                        }
                     }
                 }
 
                 // ELSE IF Player 2:
                 else if (_currentPlayerNum == PlayerIndex.Two)
                 {
-                    // IF Up Arrow Key is down:
-                    if (_kBState.IsKeyDown(Keys.Up))
-                    {
-                        // SET direction of pEntity to '-1' to move upwards:
-                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
-                    }
+                    // SET Texture of pEntity's TextureComponent to "Paddle2_DFLT, works for idling":
+                    _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
 
-                    // ELSE IF Down Arrow Key is down:
-                    else if (_kBState.IsKeyDown(Keys.Down))
+                    // IF Up OR Down Key is down:
+                    if (_kBState.IsKeyDown(Keys.Up) || _kBState.IsKeyDown(Keys.Down))
                     {
-                        // SET direction of pEntity to '1' to move downwards:
-                        ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                        // SET Texture of pEntity's TextureComponent to "Paddle2_INPT":
+                        _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_INPT"];
+
+                        // IF Up Arrow Key is down:
+                        if (_kBState.IsKeyDown(Keys.Up))
+                        {
+                            // SET value of pEntity's TransformComponent's RotationAngle Property to '0', measured in radians:
+                            _tempTfComp.RotationAngle = 0;
+
+                            // SET direction of pEntity to '-1' to move upwards:
+                            ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
+                        }
+
+                        // ELSE IF Down Arrow Key is down:
+                        else if (_kBState.IsKeyDown(Keys.Down))
+                        {
+                            // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians:
+                            _tempTfComp.RotationAngle = (float)Math.PI;
+
+                            // SET direction of pEntity to '1' to move downwards:
+                            ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
+                        }
                     }
                 }
 
@@ -94,14 +128,12 @@ namespace COMP3401_Project.PongPackage.Responders
                 // ASSIGN value of _tempVelComp.Speed multiplied by _tempVelComp.Direction to _tempVelComp.Velocity:
                 _tempVelComp.Velocity = _tempVelComp.Speed * _tempVelComp.Direction;
             }
-
-            // ELSE (IF pEntity DOES NOT HAVE a current instance)
+            // IF pEntity DOES NOT HAVE an active instance:
             else
             {
                 // THROW new NullInstanceException, with corresponding message:
                 throw new NullInstanceException("ERROR: pEntity requiring user input does not have an active instance!");
             }
-            
         }
 
         #endregion

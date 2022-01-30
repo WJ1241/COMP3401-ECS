@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Factories.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Factories
@@ -10,7 +7,7 @@ namespace COMP3401_Project.ECSPackage.Factories
     /// <summary>
     /// Class which creates an object and returns it as its most abstract form needed
     /// Author: William Smith
-    /// Date: 21/12/21
+    /// Date: 30/01/22
     /// </summary>
     /// <typeparam name="A"> 'A'bstract Class type </typeparam>
     public class Factory<A> : IFactory<A>
@@ -24,8 +21,21 @@ namespace COMP3401_Project.ECSPackage.Factories
         /// <returns> Instance of C typed as A </returns>
         public A Create<C>() where C : A, new()
         {
-            // DECLARE & INSTANTIATE an A as a C, name it _tempObj:
-            A _tempObj = new C();
+            // DECLARE an A, name it '_tempObj':
+            A _tempObj;
+
+            // TRY checking if class implements A:
+            try
+            {
+                // INSTANTIATE _tempObj as A new C():
+                _tempObj = new C();
+            }
+            // CATCH Exception from creation of object:
+            catch (Exception)
+            {
+                // THROW new ClassDoesNotExistException, with corresponding message:
+                throw new ClassDoesNotExistException("ERROR: Class passed through parameter of method does not exist or implement Type in place of 'A'!");
+            }
 
             // RETURN instance of _tempObj:
             return _tempObj;

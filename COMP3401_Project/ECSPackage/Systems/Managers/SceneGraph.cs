@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Services.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
@@ -16,7 +14,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
     /// <summary>
     /// Class which contains entities relative to the level required to be loaded
     /// Author: William Smith
-    /// Date: 13/01/22
+    /// Date: 30/01/22
     /// </summary>
     public class SceneGraph : IService, IInitialiseIROIEntityDictionary, IInitialiseIUpdatable, IDraw, ISpawnEntity, IUpdatable
     {
@@ -53,8 +51,18 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pIRODict"> Instance of IReadOnlyDictionary<int, IEntity> </param>
         public void Initialise(IReadOnlyDictionary<int, IEntity> pIRODict)
         {
-            // INITIALISE _sceneEntityDict with reference to pIRODict:
-            _sceneEntityDict = pIRODict;
+            // IF pIRODict DOES HAVE an active instance:
+            if (pIRODict != null)
+            {
+                // INITIALISE _sceneEntityDict with reference to pIRODict:
+                _sceneEntityDict = pIRODict;
+            }
+            // IF pIRODict DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pIRODict does not have an active instance!");
+            }
         }
 
         #endregion
@@ -68,11 +76,21 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pUpdatable"> IUpdatable object </param>
         public void Initialise(IUpdatable pUpdatable)
         {
-            // INITIALISE pUpdatable with reference to _sceneEntityDict:
-            (pUpdatable as IInitialiseIROIEntityDictionary).Initialise(_sceneEntityDict);
+            // IF pUpdatable DOES HAVE an active instance:
+            if (pUpdatable != null)
+            {
+                // INITIALISE pUpdatable with reference to _sceneEntityDict:
+                (pUpdatable as IInitialiseIROIEntityDictionary).Initialise(_sceneEntityDict);
 
-            // ADD pUpdatable as a value, and its name as a string to _systemDict:
-            _systemDict.Add(pUpdatable.GetType().Name, pUpdatable);
+                // ADD pUpdatable as a value, and its name as a string to _systemDict:
+                _systemDict.Add(pUpdatable.GetType().Name, pUpdatable);
+            }
+            // IF pUpdatable DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pUpdatable does not have an active instance!");
+            }
         }
 
         #endregion
@@ -86,8 +104,34 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pSpriteBatch"> Needed to draw entity's texture on screen </param>
         public void Draw(SpriteBatch pSpriteBatch)
         {
-            // CALL Draw() on DrawSystem, passing pSpriteBatch as a parameter:
-            (_systemDict["DrawSystem"] as IDraw).Draw(pSpriteBatch);
+            // IF _systemDict DOES contain a key named "DrawSystem" && DOES HAVE an active instance:
+            if (_systemDict.ContainsKey("DrawSystem") && _systemDict["DrawSystem"] != null)
+            {
+                // TRY checking if Draw() throws a NullInstanceException:
+                try
+                {
+                    // CALL Draw() on DrawSystem, passing pSpriteBatch as a parameter:
+                    (_systemDict["DrawSystem"] as IDraw).Draw(pSpriteBatch);
+                }
+                // CATCH NullInstanceException from Draw():
+                catch (NullInstanceException e)
+                {
+                    // WRITE exception message to console:
+                    Console.WriteLine(e.Message);
+                }
+            }
+            // IF _systemDict DOES NOT contain a key named "DrawSystem":
+            else if (!_systemDict.ContainsKey("DrawSystem"))
+            {
+                // THROW new NullReferenceException, with corresponding message:
+                throw new NullReferenceException("ERROR: No object stored with 'DrawSystem' as a key in _systemDict!");
+            }
+            // IF _systemDict["DrawSystem"] DOES NOT HAVE an active instance:
+            else if (_systemDict["DrawSystem"] == null)
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: _systemDict['DrawSystem'] does not have an active instance!");
+            }
         }
 
         #endregion
@@ -102,11 +146,21 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pPosition"> Position for Entity to be placed </param>
         public void Spawn(IEntity pEntity, Vector2 pPosition)
         {
-            // SET position of pEntity with the value of pPosition:
-            ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position = pPosition;
+            // IF pEntity DOES HAVE an active instance:
+            if (pEntity != null)
+            {
+                // SET position of pEntity with the value of pPosition:
+                ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition).Position = pPosition;
 
-            // PRINT to console to inform user of new entity:
-            Console.WriteLine("Entity " + pEntity.UID + " has Spawned in Level!");
+                // PRINT to console to inform user of new entity:
+                Console.WriteLine("Entity " + pEntity.UID + " has Spawned in Level!");
+            }
+            // IF pEntity DOES NOT HAVE an active instance:
+            else
+            {
+                // THROW new NullInstanceException, with corresponding message:
+                throw new NullInstanceException("ERROR: pEntity " + pEntity.UID + " does not have an active instance!");
+            }
         }
 
         #endregion
@@ -120,11 +174,31 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pGameTime"> holds reference to GameTime object </param>
         public void Update(GameTime pGameTime)
         {
-            // FOREACH IUpdatable object in _systemDict.Values:
-            foreach (IUpdatable pUpdatable in _systemDict.Values)
+            // IF _systemDict DOES contain an object:
+            if (_systemDict.Count != 0)
             {
-                // CALL Update() on pUpdatable, passing pGameTime as a parameter:
-                pUpdatable.Update(pGameTime);
+                // FOREACH IUpdatable object in _systemDict.Values:
+                foreach (IUpdatable pUpdatable in _systemDict.Values)
+                {
+                    // TRY checking if Update() throws a NullInstanceException:
+                    try
+                    {
+                        // CALL Update() on pUpdatable, passing pGameTime as a parameter:
+                        pUpdatable.Update(pGameTime);
+                    }
+                    // CATCH NullInstanceException from Update():
+                    catch (NullInstanceException e)
+                    {
+                        // WRITE exception to console:
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
+            // IF _systemDict DOES NOT contain an object:
+            else
+            {
+                // THROW new NullReferenceException, with corresponding message:
+                throw new NullReferenceException("WARNING: There are no systems to be updated in game loop!");
             }
         }
 

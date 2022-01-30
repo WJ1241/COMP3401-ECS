@@ -238,10 +238,10 @@ namespace COMP3401_Project
             #endregion
 
 
-            #region ENTITY CREATION
+            #region INITIAL ENTITY CREATION (BG & 2 PADDLES)
 
-            // FOR LOOP for creating entities, stops before 'i' reaches 2:
-            for (int i = 0; i < 2; i++)
+            // FOR LOOP for creating entities, stops before 'i' reaches 3:
+            for (int i = 0; i < 3; i++)
             {
                 // ASSIGN _pongEntityID with value of 'i':
                 _pongEntityID = i;
@@ -273,22 +273,13 @@ namespace COMP3401_Project
 
             #region INITIALISING ENTITIES WITH COMPONENTS
 
-            #region PADDLE 1
-
+            #region BACKGROUND
+            
             // ADD a new TransformComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
 
             // ADD a new TextureComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
-
-            // ADD a new HitBoxComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
-
-            // ADD a new VelocityComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
-
-            // ADD a new PlayerComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
 
             // ADD a new LayerComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
@@ -296,7 +287,7 @@ namespace COMP3401_Project
             #endregion
 
 
-            #region PADDLE 2
+            #region PADDLE 1
 
             // ADD a new TransformComponent to _entityDict[1]'s ComponentList:
             _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
@@ -318,41 +309,99 @@ namespace COMP3401_Project
 
             #endregion
 
+
+            #region PADDLE 2
+
+            // ADD a new TransformComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
+
+            // ADD a new TextureComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
+
+            // ADD a new HitBoxComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
+
+            // ADD a new VelocityComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
+
+            // ADD a new PlayerComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
+
+            // ADD a new LayerComponent to _entityDict[2]'s ComponentList:
+            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+
+            #endregion
+
             #endregion
 
 
             #region SETTING ENTITY COMPONENT VALUES
 
+            #region BACKGROUND
+
+            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _entityDict[0]'s TextureComponent:
+            ITexture _tempTexComp = (_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+
+            // ADD "Background" texture to _entityDict[0]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Background", Content.Load<Texture2D>("Background"));
+
+            // LOAD "Background" as the texture of _entityDict[0]'s TextureComponent:
+            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Background"];
+
+            // SET Layer of _entityDict[0]'s LayerComponent to '2':
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 2;
+
+            #endregion
+
+
             #region PADDLE 1
 
-            // LOAD "ServerLogo" as the texture of _entityDict[0]'s HitBoxComponent:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("paddle");
+            // INITIALISE _tempTexComp with instance of _entityDict[0]'s TextureComponent:
+            _tempTexComp = (_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // SET Speed of _entityDict[0]'s VelocityComponent:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
+            // ADD "Paddle1_DFLT" texture to _entityDict[1]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Paddle1_DFLT", Content.Load<Texture2D>("Paddle1_DFLT"));
 
-            // SET PlayerID of _entityDict[0]'s PlayerComponent to PlayerIndex.One:
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.One;
+            // ADD "Paddle1_INPT" texture to _entityDict[1]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Paddle1_INPT", Content.Load<Texture2D>("Paddle1_INPT"));
 
-            // SET Layer of _entityDict[0]'s LayerComponent to '4':
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
+            // LOAD "Paddle1_DFLT" as the texture of _entityDict[1]'s TextureComponent:
+            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
+
+            // SET Speed of _entityDict[1]'s VelocityComponent:
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
+
+            // SET PlayerID of _entityDict[1]'s PlayerComponent to PlayerIndex.One:
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.One;
+
+            // SET Layer of _entityDict[1]'s LayerComponent to '5':
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 5;
 
             #endregion
 
 
             #region PADDLE 2
 
-            // LOAD "ServerLogo" as the texture of _entityDict[1]'s HitBoxComponent:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("paddle");
+            // INITIALISE _tempTexComp with instance of _entityDict[2]'s TextureComponent:
+            _tempTexComp = (_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // SET Speed of _entityDict[1]'s VelocityComponent:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
+            // ADD "Paddle2_DFLT" texture to _entityDict[2]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Paddle2_DFLT", Content.Load<Texture2D>("Paddle2_DFLT"));
 
-            // SET PlayerID of _entityDict[1]'s PlayerComponent to PlayerIndex.Two:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.Two;
+            // ADD "Paddle2_INPT" texture to _entityDict[2]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Paddle2_INPT", Content.Load<Texture2D>("Paddle2_INPT"));
 
-            // SET Layer of _entityDict[1]'s LayerComponent to '4':
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
+            // LOAD "Paddle2_DFLT" as the texture of _entityDict[2]'s TextureComponent:
+            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
+
+            // SET Speed of _entityDict[2]'s VelocityComponent:
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
+
+            // SET PlayerID of _entityDict[2]'s PlayerComponent to PlayerIndex.Two:
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.Two;
+
+            // SET Layer of _entityDict[2]'s LayerComponent to '5':
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 5;
 
             #endregion
 
@@ -361,24 +410,38 @@ namespace COMP3401_Project
 
             #region SPAWNING ENTITIES
 
+            #region BACKGROUND
+
+            // SPAWN _entityDict[0] with Position at origin:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], new Vector2(0));
+
+            #endregion
+
+
             #region PADDLE 1
 
-            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from entity to be spawned on screen:
-            Texture2D _tempTexture = ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from _entityDict[1] to be spawned on screen:
+            Texture2D _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
-            // SPAWN _entityDict[0] with Position at left side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], new Vector2(_tempTexture.Width, (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+            // SET Origin of _entityDict[1]'s TransformComponent, centre of Texture:
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+
+            // SPAWN _entityDict[1] with Position at left side of screen with some space:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_tempTexture.Width, _screenSize.Y / 2));
 
             #endregion
 
 
             #region PADDLE 2
 
-            // INITIALISE _tempTexture with the Texture from _entityDict[1]:
-            _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+            // INITIALISE _tempTexture with the Texture from _entityDict[2]:
+            _tempTexture = ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
-            // SPAWN _entityDict[1] with Position at right side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_screenSize.X - (_tempTexture.Width * 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+            // SET Origin of _entityDict[2]'s TransformComponent, centre of Texture:
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+
+            // SPAWN _entityDict[2] with Position at right side of screen with some space:
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[2], new Vector2(_screenSize.X - _tempTexture.Width, _screenSize.Y / 2));
 
             #endregion
 
@@ -391,7 +454,6 @@ namespace COMP3401_Project
             #endregion
 
             #endregion
-
         }
 
         /// <summary>
@@ -490,11 +552,17 @@ namespace COMP3401_Project
 
             #region SETTING COMPONENT VALUES
 
-            // LOAD "ServerLogo" as the texture of _entityDict[_pongEntityID]'s HitBoxComponent:
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = Content.Load<Texture2D>("square");
+            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _entityDict[_pongEntityID]'s TextureComponent:
+            ITexture _tempTexComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '3':
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
+            // ADD "Football" texture to _entityDict[_pongEntityID]'s TextureComponent's Dictionary:
+            _tempTexComp.ReturnTextureDict().Add("Football", Content.Load<Texture2D>("Football"));
+
+            // LOAD "Football" as the texture of _entityDict[_pongEntityID]'s TextureComponent:
+            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Football"];
+
+            // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '4':
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #region VELOCITY COMPONENT
 
@@ -541,7 +609,6 @@ namespace COMP3401_Project
             (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[_pongEntityID], new Vector2((_screenSize.X / 2) - (_tempTexture.Width / 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
 
             #endregion
-
         }
 
         #endregion
