@@ -63,7 +63,6 @@ namespace COMP3401_Project.ECSPackage.Entities
             }
         }
 
-
         /// <summary>
         /// Property which allows callers to have read and write access to unique ID
         /// </summary>

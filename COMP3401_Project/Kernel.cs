@@ -8,6 +8,7 @@ using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Delegates.Interfaces;
 using COMP3401_Project.ECSPackage.Entities;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
+using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Factories;
 using COMP3401_Project.ECSPackage.Factories.Interfaces;
 using COMP3401_Project.ECSPackage.Services.Interfaces;
@@ -22,7 +23,7 @@ namespace COMP3401_Project
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 23/01/22
+    /// Date: 31/01/22
     /// </summary>
     public class Kernel : Game
     {
@@ -133,107 +134,138 @@ namespace COMP3401_Project
 
             #region MANAGER INSTANTIATIONS
 
-            #region ENTITY MANAGER
+            // TRY checking if ClassDoesNotExistException or NullInstanceException are thrown:
+            try
+            {
+                #region ENTITY MANAGER
 
-            // INSTANTIATE _serviceDict["EntityManager"] as a new EntityManager():
-            _serviceDict.Add("EntityManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<EntityManager>());
+                // INSTANTIATE _serviceDict["EntityManager"] as a new EntityManager():
+                _serviceDict.Add("EntityManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<EntityManager>());
 
-            // STORE reference to master entity list locally for easier reuse:
-            _entityDict = (_serviceDict["EntityManager"] as IRtnEntityDictionary).ReturnEntityDict();
+                // STORE reference to master entity list locally for easier reuse:
+                _entityDict = (_serviceDict["EntityManager"] as IRtnEntityDictionary).ReturnEntityDict();
 
-            #endregion
+                #endregion
 
 
-            #region SCENE MANAGER
+                #region SCENE MANAGER
 
-            // INSTANTIATE _serviceDict["SceneManager"] as a new SceneManager():
-            _serviceDict.Add("SceneManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneManager>());
+                // INSTANTIATE _serviceDict["SceneManager"] as a new SceneManager():
+                _serviceDict.Add("SceneManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneManager>());
 
-            // INITIALISE _serviceDict["SceneManager"] with a new SceneGraph():
-            (_serviceDict["SceneManager"] as IInitialiseISpawnEntity).Initialise((_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneGraph>() as ISpawnEntity);
+                // INITIALISE _serviceDict["SceneManager"] with a new SceneGraph():
+                (_serviceDict["SceneManager"] as IInitialiseISpawnEntity).Initialise((_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneGraph>() as ISpawnEntity);
 
-            // INITIALISE _serviceDict["EntityManager"] with reference to _serviceDict["SceneManager"]:
-            (_serviceDict["EntityManager"] as IInitialiseISceneManager).Initialise(_serviceDict["SceneManager"] as ISceneManager);
+                // INITIALISE _serviceDict["EntityManager"] with reference to _serviceDict["SceneManager"]:
+                (_serviceDict["EntityManager"] as IInitialiseISceneManager).Initialise(_serviceDict["SceneManager"] as ISceneManager);
 
-            #endregion
+                #endregion
+            }
+            // CATCH ClassDoesNotExistException from Create():
+            catch (ClassDoesNotExistException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            // CATCH NullInstanceException from Initialise():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
 
             #endregion
 
 
             #region INITIALISING SYSTEMS TO SCENEMANAGER
 
-            #region DRAW SYSTEM
+            // TRY checking if ClassDoesNotExistException or NullInstanceException are thrown:
+            try
+            {
+                #region DRAW SYSTEM
 
-            // DECLARE & INSTANTIATE a new DrawSystem(), name it '_tempUpdatable':
-            IUpdatable _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<DrawSystem>();
+                // DECLARE & INSTANTIATE a new DrawSystem(), name it '_tempUpdatable':
+                IUpdatable _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<DrawSystem>();
 
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+                // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+                (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
 
-            #endregion
-
-
-            #region MOVEMENT SYSTEM
-
-            // INSTANTIATE _tempUpdatable as new MovementSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
-
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
-
-            #region IMOVEMENTBOUNDRESPONDER INITIALISATION
-
-            // DECLARE & INSTANTIATE an IMovementBoundResponder as a new PongMovementBoundResponder, name it '_mmBoundResponder':
-            IMovementBoundResponder _mmBoundResponder = (_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongMovementBoundResponder>() as IMovementBoundResponder;
-
-            // INITIALISE _mmBoundResponder with reference to CreateBall() method:
-            (_mmBoundResponder as IInitialiseCreateDel).Initialise(CreateBall);
-
-            // INITIALISE _mmBoundResponder with reference to _entityDict.Terminate() method:
-            (_mmBoundResponder as IInitialiseDeleteDel).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
-
-            // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (0,0):
-            _mmBoundResponder.MinXYBound = new Point(0);
-
-            // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (_screenSize.X,_screenSize.Y):
-            _mmBoundResponder.MaxXYBound = new Point((int)_screenSize.X, (int)_screenSize.Y);
-
-            #endregion
-
-            // INITIALISE _tempUpdatable with _mmBoundResponder:
-            (_tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
+                #endregion
 
 
-            #endregion
+                #region MOVEMENT SYSTEM
+
+                // INSTANTIATE _tempUpdatable as new MovementSystem():
+                _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
+
+                // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+                (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+
+                #region IMOVEMENTBOUNDRESPONDER INITIALISATION
+
+                // DECLARE & INSTANTIATE an IMovementBoundResponder as a new PongMovementBoundResponder, name it '_mmBoundResponder':
+                IMovementBoundResponder _mmBoundResponder = (_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongMovementBoundResponder>() as IMovementBoundResponder;
+
+                // INITIALISE _mmBoundResponder with reference to CreateBall() method:
+                (_mmBoundResponder as IInitialiseCreateDel).Initialise(CreateBall);
+
+                // INITIALISE _mmBoundResponder with reference to _entityDict.Terminate() method:
+                (_mmBoundResponder as IInitialiseDeleteDel).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
+
+                // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (0,0):
+                _mmBoundResponder.MinXYBound = new Point(0);
+
+                // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (_screenSize.X,_screenSize.Y):
+                _mmBoundResponder.MaxXYBound = new Point((int)_screenSize.X, (int)_screenSize.Y);
+
+                #endregion
+
+                // INITIALISE _tempUpdatable with _mmBoundResponder:
+                (_tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
 
 
-            #region INPUT SYSTEM
-
-            // INSTANTIATE _tempUpdatable as new InputSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
-
-            // INITIALISE _tempUpdatable with a new PaddleInputResponder():
-            (_tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
-
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
-
-            #endregion
+                #endregion
 
 
-            #region COLLISION SYSTEM
+                #region INPUT SYSTEM
 
-            // INSTANTIATE _tempUpdatable as new CollisionSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
+                // INSTANTIATE _tempUpdatable as new InputSystem():
+                _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
 
-            // INITIALISE _tempUpdatable with a new PongEntityCollisionResponder():
-            (_tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
+                // INITIALISE _tempUpdatable with a new PaddleInputResponder():
+                (_tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
 
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+                // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+                (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
 
-            #endregion
+                #endregion
 
+
+                #region COLLISION SYSTEM
+
+                // INSTANTIATE _tempUpdatable as new CollisionSystem():
+                _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
+
+                // INITIALISE _tempUpdatable with a new PongEntityCollisionResponder():
+                (_tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
+
+                // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
+                (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+
+                #endregion
+            }
+            // CATCH ClassDoesNotExistException from Create():
+            catch (ClassDoesNotExistException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            // CATCH NullInstanceException from Initialise():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
 
             #endregion
 
@@ -246,8 +278,21 @@ namespace COMP3401_Project
                 // ASSIGN _pongEntityID with value of 'i':
                 _pongEntityID = i;
 
-                // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
-                IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
+                // DECLARE an IEntity, name it '_tempEntity', set to null because of try/catch block assigning value:
+                IEntity _tempEntity = null;
+
+                // TRY checking if ClassDoesNotExistException or NullInstanceException are thrown:
+                try
+                {
+                    // INSTANTIATE _tempEntity as a new Entity():
+                    _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
+                }
+                // CATCH ClassDoesNotExistException from Create():
+                catch (ClassDoesNotExistException e)
+                {
+                    // WRITE exception message to console:
+                    Console.WriteLine(e.Message);
+                }
 
                 // ASSIGN UID to _tempEntity:
                 _tempEntity.UID = _pongEntityID;
@@ -273,64 +318,80 @@ namespace COMP3401_Project
 
             #region INITIALISING ENTITIES WITH COMPONENTS
 
-            #region BACKGROUND
-            
-            // ADD a new TransformComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
+            // TRY checking if ClassDoesNotExistException and NullInstanceException are thrown:
+            try
+            {
+                #region BACKGROUND
 
-            // ADD a new TextureComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
+                // ADD a new TransformComponent to _entityDict[0]'s ComponentList:
+                _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
 
-            // ADD a new LayerComponent to _entityDict[0]'s ComponentList:
-            _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+                // ADD a new TextureComponent to _entityDict[0]'s ComponentList:
+                _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
 
-            #endregion
+                // ADD a new LayerComponent to _entityDict[0]'s ComponentList:
+                _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
 
-
-            #region PADDLE 1
-
-            // ADD a new TransformComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
-
-            // ADD a new TextureComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
-
-            // ADD a new HitBoxComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
-
-            // ADD a new VelocityComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
-
-            // ADD a new PlayerComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
-
-            // ADD a new LayerComponent to _entityDict[1]'s ComponentList:
-            _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
-
-            #endregion
+                #endregion
 
 
-            #region PADDLE 2
+                #region PADDLE 1
 
-            // ADD a new TransformComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
+                // ADD a new TransformComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
 
-            // ADD a new TextureComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
+                // ADD a new TextureComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
 
-            // ADD a new HitBoxComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
+                // ADD a new HitBoxComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
 
-            // ADD a new VelocityComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
+                // ADD a new VelocityComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
 
-            // ADD a new PlayerComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
+                // ADD a new PlayerComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
 
-            // ADD a new LayerComponent to _entityDict[2]'s ComponentList:
-            _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+                // ADD a new LayerComponent to _entityDict[1]'s ComponentList:
+                _entityDict[1].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
 
-            #endregion
+                #endregion
+
+
+                #region PADDLE 2
+
+                // ADD a new TransformComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
+
+                // ADD a new TextureComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TextureComponent>());
+
+                // ADD a new HitBoxComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<HitBoxComponent>());
+
+                // ADD a new VelocityComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<VelocityComponent>());
+
+                // ADD a new PlayerComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<PlayerComponent>());
+
+                // ADD a new LayerComponent to _entityDict[2]'s ComponentList:
+                _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
+
+                #endregion
+            }
+            // CATCH NullInstanceException from Create():
+            catch (ClassDoesNotExistException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            // CATCH NullInstanceException from AddComponent():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
 
             #endregion
 
@@ -410,41 +471,50 @@ namespace COMP3401_Project
 
             #region SPAWNING ENTITIES
 
-            #region BACKGROUND
+            // TRY checking if NullInstanceException and NullReferenceException are thrown:
+            try
+            {
+                #region BACKGROUND
 
-            // SPAWN _entityDict[0] with Position at origin:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], new Vector2(0));
+                // SPAWN _entityDict[0] with Position at origin:
+                (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[0], new Vector2(0));
 
-            #endregion
-
-
-            #region PADDLE 1
-
-            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from _entityDict[1] to be spawned on screen:
-            Texture2D _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
-
-            // SET Origin of _entityDict[1]'s TransformComponent, centre of Texture:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
-
-            // SPAWN _entityDict[1] with Position at left side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_tempTexture.Width, _screenSize.Y / 2));
-
-            #endregion
+                #endregion
 
 
-            #region PADDLE 2
+                #region PADDLE 1
 
-            // INITIALISE _tempTexture with the Texture from _entityDict[2]:
-            _tempTexture = ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+                // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from _entityDict[1] to be spawned on screen:
+                Texture2D _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
-            // SET Origin of _entityDict[2]'s TransformComponent, centre of Texture:
-            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+                // SET Origin of _entityDict[1]'s TransformComponent, centre of Texture:
+                ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
 
-            // SPAWN _entityDict[2] with Position at right side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[2], new Vector2(_screenSize.X - _tempTexture.Width, _screenSize.Y / 2));
+                // SPAWN _entityDict[1] with Position at left side of screen with some space:
+                (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_tempTexture.Width, _screenSize.Y / 2));
 
-            #endregion
+                #endregion
 
+
+                #region PADDLE 2
+
+                // INITIALISE _tempTexture with the Texture from _entityDict[2]:
+                _tempTexture = ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+
+                // SET Origin of _entityDict[2]'s TransformComponent, centre of Texture:
+                ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+
+                // SPAWN _entityDict[2] with Position at right side of screen with some space:
+                (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[2], new Vector2(_screenSize.X - _tempTexture.Width, _screenSize.Y / 2));
+
+                #endregion
+            }
+            // CATCH NullInstanceException from Update():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
 
             #region BALL
 
@@ -478,8 +548,24 @@ namespace COMP3401_Project
                 Exit();
             }
 
-            // CALL Update() on _serviceDict["SceneManager"], passing pGameTime as a parameter:
-            (_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
+            // TRY checking if NullInstanceException and NullReferenceException are thrown:
+            try
+            {
+                // CALL Update() on _serviceDict["SceneManager"], passing pGameTime as a parameter:
+                (_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
+            }
+            // CATCH NullInstanceException from Update():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            // CATCH NullReferenceException from Update():
+            catch (NullReferenceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
 
             // CALL Update() on base class, passing pGameTime as a parameter:
             base.Update(pGameTime);
@@ -494,8 +580,25 @@ namespace COMP3401_Project
             // SET colour of background:
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // CALL Draw() on _sceneManager, passing _spriteBatch as a parameter:
-            (_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
+            // TRY checking if NullInstanceException and NullReferenceException are thrown:
+            try
+            {
+                // CALL Draw() on _sceneManager, passing _spriteBatch as a parameter:
+                (_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
+            }
+            // CATCH NullInstanceException from Draw():
+            catch (NullInstanceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            // CATCH NullReferenceException from Draw():
+            catch (NullReferenceException e)
+            {
+                // WRITE exception message to console:
+                Console.WriteLine(e.Message);
+            }
+            
 
             // CALL Draw() on base class, passing pGameTime as a parameter:
             base.Draw(pGameTime);
