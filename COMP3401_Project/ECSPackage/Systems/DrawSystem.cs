@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.ECSPackage.Systems
@@ -11,7 +10,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Transform and Texture Components to draw entity on screen
     /// Author: William Smith
-    /// Date: 30/01/22
+    /// Date: 09/02/22
     /// </summary>
     public class DrawSystem : System, IDraw
     {
@@ -54,21 +53,11 @@ namespace COMP3401_Project.ECSPackage.Systems
             // CALL Begin() on pSpriteBatch to allow entities with Draw Components to be drawn on screen:
             pSpriteBatch.Begin();
 
-            // IF _textureCompDict DOES HAVE an active instance:
-            if (_textureCompDict != null)
+            // FOREACH UID in _textureCompDict:
+            foreach (int pInt in _textureCompDict.Keys)
             {
-                // FOREACH UID in _textureCompDict:
-                foreach (int pInt in _textureCompDict.Keys)
-                {
-                    // DRAW given texture, given location, colour, rotation and origin:
-                    pSpriteBatch.Draw(_textureCompDict[pInt].Texture, _transformCompDict[pInt].Position, null, Color.AntiqueWhite, (_transformCompDict[pInt] as IRotation).RotationAngle, (_transformCompDict[pInt] as IRotation).Origin, 1f, SpriteEffects.None, 1f);
-                }
-            }
-            // IF _textureCompDict DOES NOT HAVE an active instance:
-            else
-            {
-                // THROW new NullInstanceException, with corresponding message:
-                throw new NullInstanceException("ERROR: _textureCompDict does not have an active instance!");
+                // DRAW given texture, given location, colour, rotation and origin:
+                pSpriteBatch.Draw(_textureCompDict[pInt].Texture, _transformCompDict[pInt].Position, null, Color.AntiqueWhite, (_transformCompDict[pInt] as IRotation).RotationAngle, (_transformCompDict[pInt] as IRotation).Origin, 1f, SpriteEffects.None, 1f);
             }
 
             // CALL End() on pSpriteBatch to signal end of entity drawing iteration:

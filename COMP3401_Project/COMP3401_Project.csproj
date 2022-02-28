@@ -65,7 +65,6 @@
     <Compile Include="ECSPackage\Entities\Interfaces\IRtnROIComponentDictionary.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IEntity.cs" />
     <Compile Include="ECSPackage\Exceptions\ClassDoesNotExistException.cs" />
-    <Compile Include="ECSPackage\Exceptions\InvalidValueException.cs" />
     <Compile Include="ECSPackage\Exceptions\NullInstanceException.cs" />
     <Compile Include="ECSPackage\Factories\Factory.cs" />
     <Compile Include="ECSPackage\Factories\Interfaces\IFactory.cs" />
@@ -92,6 +91,7 @@
     <Compile Include="ECSPackage\Systems\MovementSystem.cs" />
     <Compile Include="ECSPackage\Systems\System.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="PongPackage\Responders\Interfaces\ITestKBInput.cs" />
     <Compile Include="PongPackage\Responders\PaddleInputResponder.cs" />
     <Compile Include="PongPackage\Responders\PongEntityCollisionResponder.cs" />
     <Compile Include="PongPackage\Responders\PongMovementBoundResponder.cs" />

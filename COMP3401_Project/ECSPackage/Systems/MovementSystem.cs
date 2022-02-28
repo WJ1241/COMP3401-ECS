@@ -85,34 +85,14 @@ namespace COMP3401_Project.ECSPackage.Systems
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
 
-            // IF _velocityCompDict DOES HAVE an active instance:
-            if (_velocityCompDict != null)
+            // FOREACH Moveable entity:
+            foreach (int pInt in _velocityCompDict.Keys)
             {
-                // FOREACH Moveable entity:
-                foreach (int pInt in _velocityCompDict.Keys)
-                {
-                    // CHANGE Position of TransformComponent, using VelocityComponent's velocity property:
-                    _transformCompDict[pInt].Position += _velocityCompDict[pInt].Velocity;
+                // CHANGE Position of TransformComponent, using VelocityComponent's velocity property:
+                _transformCompDict[pInt].Position += _velocityCompDict[pInt].Velocity;
 
-                    // TRY checking if RespondToBound() throws a NullInstanceException:
-                    try
-                    {
-                        // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
-                        _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
-                    }
-                    // CATCH NullInstanceException from RespondToBound():
-                    catch (NullInstanceException e)
-                    {
-                        // WRITE exception message to console:
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
-            // IF _velocityCompDict DOES NOT HAVE an active instance:
-            else
-            {
-                // THROW new NullInstanceException, with corresponding message:
-                throw new NullInstanceException("ERROR: _velocityCompDict does not have an active instance!");
+                // CALL RespondToBound(), passing _roEntityDict[pInt] as a parameter, constantly being called so position is always known:
+                _mmBoundResponder.RespondToBound(_roEntityDict[pInt]);
             }
         }
 

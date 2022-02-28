@@ -12,7 +12,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses HitBox Components to test whether entities have collided with other entities
     /// Author: William Smith & Marc Price
-    /// Date: 30/01/22
+    /// Date: 09/02/22
     /// </summary>
     /// <REFERENCE> Price, M. (2021) ‘Session 16 - Collision Management’, Games Design & Engineering: Sessions. Available at: https://worcesterbb.blackboard.com. (Accessed: 14 January 2022).</REFERENCE>
     public class CollisionSystem : System, IInitialiseICollisionResponder
@@ -102,7 +102,8 @@ namespace COMP3401_Project.ECSPackage.Systems
                 // SET HitBox property of HitBoxComponent to a new Rectangle created using TransformComponent's Position property and TextureComponent's Texture property, takes away Origin due to actual Position being different to draw Position:
                 _hitBoxCompDict[pInt].HitBox = new Rectangle((int)_transformCompDict[pInt].Position.X - (int)(_transformCompDict[pInt] as IRotation).Origin.X, 
                                                              (int)_transformCompDict[pInt].Position.Y - (int)(_transformCompDict[pInt] as IRotation).Origin.Y,
-                                                             _textureCompDict[pInt].Texture.Width, _textureCompDict[pInt].Texture.Height);
+                                                             _textureCompDict[pInt].TexSize.X,
+                                                             _textureCompDict[pInt].TexSize.Y);
             }
 
             // DECLARE an IList<IContainHitBox>, give value of _hitBoxCompDict.Values as a List:
@@ -117,18 +118,8 @@ namespace COMP3401_Project.ECSPackage.Systems
                     // IF First Entity (i) Collides with Second Entity (j):
                     if (_tempHitBoxList[i].HitBox.Intersects(_tempHitBoxList[j].HitBox))
                     {
-                        // TRY checking if RespondToCollision throws a NullInstanceException:
-                        try
-                        {
-                            // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
-                            _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
-                        }
-                        // CATCH NullInstanceException from RespondToCollision:
-                        catch (NullInstanceException e)
-                        {
-                            // WRITE exception message to console:
-                            Console.WriteLine(e.Message);
-                        }
+                        // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
+                        _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
                     }
                 }
             }

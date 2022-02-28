@@ -14,7 +14,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
     /// <summary>
     /// Class which contains entities relative to the level required to be loaded
     /// Author: William Smith
-    /// Date: 30/01/22
+    /// Date: 09/02/22
     /// </summary>
     public class SceneGraph : IService, IInitialiseIROIEntityDictionary, IInitialiseIUpdatable, IDraw, ISpawnEntity, IUpdatable
     {
@@ -104,34 +104,8 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pSpriteBatch"> Needed to draw entity's texture on screen </param>
         public void Draw(SpriteBatch pSpriteBatch)
         {
-            // IF _systemDict DOES contain a key named "DrawSystem" && DOES HAVE an active instance:
-            if (_systemDict.ContainsKey("DrawSystem") && _systemDict["DrawSystem"] != null)
-            {
-                // TRY checking if Draw() throws a NullInstanceException:
-                try
-                {
-                    // CALL Draw() on DrawSystem, passing pSpriteBatch as a parameter:
-                    (_systemDict["DrawSystem"] as IDraw).Draw(pSpriteBatch);
-                }
-                // CATCH NullInstanceException from Draw():
-                catch (NullInstanceException e)
-                {
-                    // WRITE exception message to console:
-                    Console.WriteLine(e.Message);
-                }
-            }
-            // IF _systemDict DOES NOT contain a key named "DrawSystem":
-            else if (!_systemDict.ContainsKey("DrawSystem"))
-            {
-                // THROW new NullReferenceException, with corresponding message:
-                throw new NullReferenceException("ERROR: No object stored with 'DrawSystem' as a key in _systemDict!");
-            }
-            // IF _systemDict["DrawSystem"] DOES NOT HAVE an active instance:
-            else if (_systemDict["DrawSystem"] == null)
-            {
-                // THROW new NullInstanceException, with corresponding message:
-                throw new NullInstanceException("ERROR: _systemDict['DrawSystem'] does not have an active instance!");
-            }
+            // CALL Draw() on DrawSystem, passing pSpriteBatch as a parameter:
+            (_systemDict["DrawSystem"] as IDraw).Draw(pSpriteBatch);
         }
 
         #endregion
@@ -174,31 +148,11 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pGameTime"> holds reference to GameTime object </param>
         public void Update(GameTime pGameTime)
         {
-            // IF _systemDict DOES contain an object:
-            if (_systemDict.Count != 0)
+            // FOREACH IUpdatable object in _systemDict.Values:
+            foreach (IUpdatable pUpdatable in _systemDict.Values)
             {
-                // FOREACH IUpdatable object in _systemDict.Values:
-                foreach (IUpdatable pUpdatable in _systemDict.Values)
-                {
-                    // TRY checking if Update() throws a NullInstanceException:
-                    try
-                    {
-                        // CALL Update() on pUpdatable, passing pGameTime as a parameter:
-                        pUpdatable.Update(pGameTime);
-                    }
-                    // CATCH NullInstanceException from Update():
-                    catch (NullInstanceException e)
-                    {
-                        // WRITE exception to console:
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
-            // IF _systemDict DOES NOT contain an object:
-            else
-            {
-                // THROW new NullReferenceException, with corresponding message:
-                throw new NullReferenceException("WARNING: There are no systems to be updated in game loop!");
+                // CALL Update() on pUpdatable, passing pGameTime as a parameter:
+                pUpdatable.Update(pGameTime);
             }
         }
 

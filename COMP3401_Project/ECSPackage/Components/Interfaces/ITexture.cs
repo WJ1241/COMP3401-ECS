@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace COMP3401_Project.ECSPackage.Components.Interfaces
@@ -10,7 +11,7 @@ namespace COMP3401_Project.ECSPackage.Components.Interfaces
     /// <summary>
     /// Interface which allows implementations to have a Texture2D object
     /// Author: William Smith
-    /// Date: 26/01/22
+    /// Date: 09/02/22
     /// </summary>
     public interface ITexture
     {
@@ -20,6 +21,11 @@ namespace COMP3401_Project.ECSPackage.Components.Interfaces
         /// Property which gives caller read and write access to a Texture object
         /// </summary>
         Texture2D Texture { get; set; }
+
+        /// <summary>
+        /// Property which gives caller read and write access to Texture Size
+        /// </summary>
+        Point TexSize { get; set; }
 
         #endregion
 

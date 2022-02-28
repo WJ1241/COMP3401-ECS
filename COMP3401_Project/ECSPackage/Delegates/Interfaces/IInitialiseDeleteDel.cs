@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace COMP3401_Project.ECSPackage.Delegates.Interfaces
 {
     /// <summary>
-    /// Interface which allows implementations to be initialise with a 'Delete' delegate
+    /// Interface which allows implementations to be initialised with a 'Delete' delegate
     /// Author: William Smith
     /// Date: 21/12/21
     /// </summary>

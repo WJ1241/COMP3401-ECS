@@ -13,6 +13,8 @@ namespace COMP3401_Project.ECSPackage.Exceptions
     /// </summary>
     public class ClassDoesNotExistException : Exception
     {
+        #region CONSTRUCTOR
+
         /// <summary>
         /// Constructor for objects of ClassDoesNotExistException, calls base 'Exception' constructor to pass 'pMessage' value
         /// </summary>
@@ -21,5 +23,7 @@ namespace COMP3401_Project.ECSPackage.Exceptions
         {
 
         }
+
+        #endregion
     }
 }

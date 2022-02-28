@@ -22,7 +22,7 @@ namespace COMP3401_Project
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 23/01/22
+    /// Date: 09/02/22
     /// </summary>
     public class Kernel : Game
     {
@@ -117,21 +117,21 @@ namespace COMP3401_Project
             _serviceDict.Add("ServiceFactory", new Factory<IService>());
 
             // ADD a new Factory<IEntity>() to _serviceDict:
-            _serviceDict.Add("EntityFactory", new Factory<IEntity>());
+            _serviceDict.Add("EntityFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IEntity>>());
 
             // ADD a new Factory<IComponent>() to _serviceDict:
-            _serviceDict.Add("ComponentFactory", new Factory<IComponent>());
+            _serviceDict.Add("ComponentFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IComponent>>());
 
             // ADD a new Factory<IUpdatable>() to _serviceDict:
-            _serviceDict.Add("UpdatableFactory", new Factory<IUpdatable>());
+            _serviceDict.Add("UpdatableFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IUpdatable>>());
 
             // ADD a new Factory<IResponder>() to _serviceDict:
-            _serviceDict.Add("ResponderFactory", new Factory<IResponder>());
+            _serviceDict.Add("ResponderFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IResponder>>());
 
             #endregion
 
 
-            #region MANAGER INSTANTIATIONS
+            #region MANAGER INSTANTIATIONS & INITIALISATIONS
 
             #region ENTITY MANAGER
 
@@ -252,8 +252,8 @@ namespace COMP3401_Project
                 // ASSIGN UID to _tempEntity:
                 _tempEntity.UID = _pongEntityID;
 
-                // ADD _tempEntity as a value, and _tempEntity.UID as a key to _entityDict:
-                _entityDict.Add(_tempEntity.UID, _tempEntity);
+                // ADD _tempEntity to _serviceDict['EntityManager']:
+                (_serviceDict["EntityManager"] as IEntityManager).AddEntity(_tempEntity);
             }
 
             #endregion
@@ -348,8 +348,8 @@ namespace COMP3401_Project
             // LOAD "Background" as the texture of _entityDict[0]'s TextureComponent:
             _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Background"];
 
-            // SET Layer of _entityDict[0]'s LayerComponent to '2':
-            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 2;
+            // SET Layer of _entityDict[0]'s LayerComponent to '1':
+            ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 1;
 
             #endregion
 
@@ -374,8 +374,8 @@ namespace COMP3401_Project
             // SET PlayerID of _entityDict[1]'s PlayerComponent to PlayerIndex.One:
             ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.One;
 
-            // SET Layer of _entityDict[1]'s LayerComponent to '5':
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 5;
+            // SET Layer of _entityDict[1]'s LayerComponent to '4':
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #endregion
 
@@ -400,8 +400,8 @@ namespace COMP3401_Project
             // SET PlayerID of _entityDict[2]'s PlayerComponent to PlayerIndex.Two:
             ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID = PlayerIndex.Two;
 
-            // SET Layer of _entityDict[2]'s LayerComponent to '5':
-            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 5;
+            // SET Layer of _entityDict[2]'s LayerComponent to '4':
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #endregion
 
@@ -516,8 +516,6 @@ namespace COMP3401_Project
             // INCREMENT _pongEntityID by 1:
             _pongEntityID++;
 
-            Console.WriteLine("UID is now " + _pongEntityID);
-
             // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
             IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
 
@@ -561,8 +559,8 @@ namespace COMP3401_Project
             // LOAD "Football" as the texture of _entityDict[_pongEntityID]'s TextureComponent:
             _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Football"];
 
-            // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '4':
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
+            // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '3':
+            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
 
             #region VELOCITY COMPONENT
 
@@ -583,17 +581,17 @@ namespace COMP3401_Project
                 _randDir.Y *= -1;
             }
 
-            // DECLARE & INITIALISE an IVelocity, give value of _entityDict[_pongEntityID]'s VelocityComponent, name it '_ballVelComp':
-            IVelocity _ballVelComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, name it '_tempVelComp', give value of _entityDict[_pongEntityID]'s VelocityComponent:
+            IVelocity _tempVelComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
             // SET Speed of _entityDict[_pongEntityID]'s VelocityComponent with value of '5':
-            _ballVelComp.Speed = 5;
+            _tempVelComp.Speed = 5;
 
             // SET Direction of _entityDict[_pongEntityID]'s VelocityComponent with value of _randDir:
-            _ballVelComp.Direction = _randDir;
+            _tempVelComp.Direction = _randDir;
 
             // SET Velocity of _entityDict[_pongEntityID]'s VelocityComponent with it's Speed Property multiplied by it's Direction Property:
-            ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Velocity = _ballVelComp.Speed * _ballVelComp.Direction;
+            _tempVelComp.Velocity = _tempVelComp.Speed * _tempVelComp.Direction;
 
             #endregion
 

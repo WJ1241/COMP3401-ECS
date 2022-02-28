@@ -11,7 +11,7 @@ namespace COMP3401_Project.ECSPackage.Systems
     /// <summary>
     /// System which uses Player Components to allow an entity to be controlled by a User/Player
     /// Author: William Smith
-    /// Date: 30/01/22
+    /// Date: 09/02/22
     /// </summary>
     public class InputSystem : System, IInitialiseIInputResponder
     {
@@ -76,31 +76,11 @@ namespace COMP3401_Project.ECSPackage.Systems
             // CALL AddToCompDictionaries() iteratively so references are not kept:
             AddToCompDictionaries();
 
-            // IF _playerEntityDict DOES HAVE an active instance:
-            if (_playerEntityDict != null)
+            // FOREACH IEntity object in _playerEntityDict.Values:
+            foreach (IEntity pEntity in _playerEntityDict.Values)
             {
-                // FOREACH IEntity object in _playerEntityDict.Values:
-                foreach (IEntity pEntity in _playerEntityDict.Values)
-                {
-                    // TRY checking if RespondToInput() throws a NullInstanceException:
-                    try
-                    {
-                        // CALL RespondToInput on _inputResponder, passing pEntity as a parameter, constantly being called so player input is always detected:
-                        _inputResponder.RespondToInput(pEntity);
-                    }
-                    // CATCH 
-                    catch (NullInstanceException e)
-                    {
-                        // WRITE exception message to console:
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
-            // IF _playerEntityDict DOES NOT HAVE an active instance:
-            else
-            {
-                // THROW new NullInstanceException, with corresponding message:
-                throw new NullInstanceException("ERROR: _playerEntityDict does not have an active instance!");
+                // CALL RespondToInput on _inputResponder, passing pEntity as a parameter, constantly being called so player input is always detected:
+                _inputResponder.RespondToInput(pEntity);
             }
         }
 
@@ -122,26 +102,13 @@ namespace COMP3401_Project.ECSPackage.Systems
             {
                 // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
                 IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
-
-                // FOREACH IComponent in _tempCompDict.Values:
-                foreach (IComponent pComponent in _tempCompDict.Values)
-                {
-                    // IF pComponent implements IPlayer:
-                    if (pComponent is IPlayer)
-                    {
-                        // ADD Player Entity to _playerEntityDict as a value, and their UID as a key:
-                        _playerEntityDict.Add(_roEntityDict[pInt].UID, _roEntityDict[pInt]);
-                    }
-                }
-
-                /*
+                
                 // IF _tempCompDict contains a PlayerComponent:
                 if (_tempCompDict.ContainsKey("PlayerComponent"))
                 {
                     // ADD Player Entity to _playerEntityDict as a value, and their UID as a key:
                     _playerEntityDict.Add(_roEntityDict[pInt].UID, _roEntityDict[pInt]);
                 }
-                */
             }
         }
 
