@@ -157,6 +157,5 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         }
 
         #endregion
-
     }
 }
