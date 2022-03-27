@@ -59,11 +59,17 @@ namespace COMP3401_Project.ECSPackage.Components
             set
             {
                 // SET value of _texture to incoming value:
+                // NOT IN IF CONDITION SO IT CAN BE NULLIFIED
                 _texture = value;
 
-                // SET _texSize to size of incoming value:
-                // Saves having to set it in within Game code:
-                _texSize = new Point(value.Width, value.Height);
+                // IF value DOES NOT HAVE an active instance:
+                // CHECKS IN CASE TEXTURE IS SET TO NULL
+                if (value != null)
+                {
+                    // SET _texSize to size of incoming value:
+                    // Saves having to set it in within Game code:
+                   _texSize = new Point(value.Width, value.Height);
+                }
             }
         }
 

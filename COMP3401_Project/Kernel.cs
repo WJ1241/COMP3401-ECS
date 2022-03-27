@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,6 +16,7 @@ using COMP3401_Project.ECSPackage.Systems;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 using COMP3401_Project.ECSPackage.Systems.Managers;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
+using COMP3401_Project.PongPackage.Forms;
 using COMP3401_Project.PongPackage.Responders;
 
 namespace COMP3401_Project
@@ -22,7 +24,7 @@ namespace COMP3401_Project
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 09/02/22
+    /// Date: 27/03/22
     /// </summary>
     public class Kernel : Game
     {
@@ -33,6 +35,9 @@ namespace COMP3401_Project
 
         // DECLARE an IDictionary<int, IEntity>, name it '_entityDict':
         private IDictionary<int, IEntity> _entityDict;
+
+        // DECLARE a Form, name it '_entityCreator':
+        private Form _entityCreator;
 
         // DECLARE a GraphicsDeviceManager, name it '_graphics':
         private GraphicsDeviceManager _graphics;
@@ -62,26 +67,17 @@ namespace COMP3401_Project
             // INSTANTIATE _graphics as new GraphicsDeviceManager, passing Kernel as a parameter:
             _graphics = new GraphicsDeviceManager(this);
 
-            // SET RootDirectory of Content as "Content":
-            Content.RootDirectory = "Content";
+            // INSTANTIATE _entityCreator as a new CreationScreen():
+            _entityCreator = new CreationScreen();
+
+            // INSTANTIATE _rand as a new Random():
+            _rand = new Random();
 
             // SET screen width to 1600:
             _graphics.PreferredBackBufferWidth = 1600;
 
             // SET screen height to 900;
             _graphics.PreferredBackBufferHeight = 900;
-
-            // SET IsMouseVisible to true to allow mouse testing:
-            IsMouseVisible = true;
-
-            // SET AllowUserResizing to true to allow User to configure window to suit their resolution:
-            Window.AllowUserResizing = true;
-
-            // INSTANTIATE _rand as a new Random():
-            _rand = new Random();
-
-            // ASSIGN _pongEntityID with a value of 0:
-            _pongEntityID = 0;
         }
 
         #endregion
@@ -99,11 +95,32 @@ namespace COMP3401_Project
         {
             #region INITIAL SETUP
 
+            // SET RootDirectory of Content as "Content":
+            Content.RootDirectory = "Content";
+
             // SET value of _screenSize.X to Viewport.Width:
             _screenSize.X = GraphicsDevice.Viewport.Width;
 
             // SET value of _screenSize.Y to Viewport.Height:
             _screenSize.Y = GraphicsDevice.Viewport.Height;
+
+            // INITIALISE _entityCreator with reference to CreateMultipleEntities():
+            (_entityCreator as IInitialiseCreateMultiDel).Initialise(CreateMultipleEntities);
+
+            // INITIALISE _entityCreator with reference to DeleteMultipleEntities():
+            (_entityCreator as IInitialiseDeleteDel).Initialise(DeleteMultipleEntities);
+
+            // SHOW _entityCreator:
+            _entityCreator.Show();
+
+            // SET IsMouseVisible to true to allow mouse testing:
+            IsMouseVisible = true;
+
+            // SET AllowUserResizing to true to allow User to configure window to suit their resolution:
+            Window.AllowUserResizing = true;
+
+            // ASSIGN _pongEntityID with a value of 0:
+            _pongEntityID = 0;
 
             #endregion
 
@@ -417,6 +434,7 @@ namespace COMP3401_Project
 
             #endregion
 
+            /*
 
             #region PADDLE 1
 
@@ -453,6 +471,8 @@ namespace COMP3401_Project
 
             #endregion
 
+            */
+
             #endregion
         }
 
@@ -472,14 +492,14 @@ namespace COMP3401_Project
         /// <param name="pGameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime pGameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 // CALL Exit():
                 Exit();
             }
 
             // CALL Update() on _serviceDict["SceneManager"], passing pGameTime as a parameter:
-            (_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
+            //(_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
 
             // CALL Update() on base class, passing pGameTime as a parameter:
             base.Update(pGameTime);
@@ -495,7 +515,7 @@ namespace COMP3401_Project
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // CALL Draw() on _sceneManager, passing _spriteBatch as a parameter:
-            (_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
+            //(_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
 
             // CALL Draw() on base class, passing pGameTime as a parameter:
             base.Draw(pGameTime);
@@ -607,6 +627,53 @@ namespace COMP3401_Project
             (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[_pongEntityID], new Vector2((_screenSize.X / 2) - (_tempTexture.Width / 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
 
             #endregion
+        }
+
+        /// <summary>
+        /// Method which creates as many Ball entities as specified via an integer parameter
+        /// </summary>
+        /// <param name="pInt"> Number of entities to be created </param>
+        private void CreateMultipleEntities(int pInt)
+        {
+            // FORLOOP, iterate for as many times specified by pInt:
+            for (int i = 0; i < pInt; i++)
+            {
+                // CALL CreateBall():
+                CreateBall();
+            }
+        }
+
+        /// <summary>
+        /// Method which deletes as many Ball entities as specified via an integer parameter
+        /// </summary>
+        /// <param name="pInt"> Number of entities to be deleted </param>
+        private void DeleteMultipleEntities(int pInt)
+        {
+            // IF pInt DOES NOT exceed the number of entities in _entityDict:
+            if (pInt <= _entityDict.Count)
+            {
+                // DECLARE & INITIALISE an int with the value of _entityDict.Count - 1 due to using index 0, name it 'tempEntCount':
+                int tempEntCount = _entityDict.Count - 1;
+
+                // FORLOOP, iterate for as many times specified by pInt:
+                for (int i = tempEntCount; i > tempEntCount - pInt; i--)
+                {
+                    // REMOVE entity stored at address 'i' from "EntityManager":
+                    (_serviceDict["EntityManager"] as IEntityManager).Terminate(i);
+
+                    // DECREMENT _pongEntityID by '1':
+                    _pongEntityID--;
+                }
+
+                // CALL Collect on Garbage Collector to ensure memory collection after termination:
+                GC.Collect();
+            }
+            // IF pInt DOES exceed the number of entities in _entityDict:
+            else
+            {
+                // WRITE to console explaining that user cannot delete more than the current entity count:
+                Console.WriteLine("ERROR: You cannot delete more entities than the number currently stored in the Entity Dictionary!");
+            }
         }
 
         #endregion

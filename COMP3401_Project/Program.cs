@@ -13,7 +13,7 @@ namespace COMP3401_Project
         /// </summary>
         [STAThread]
         static void Main()
-       {
+        {
             using (var game = new Kernel())
                 game.Run();
         }

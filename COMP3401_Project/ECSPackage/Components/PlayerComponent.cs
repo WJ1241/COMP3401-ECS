@@ -56,6 +56,5 @@ namespace COMP3401_Project.ECSPackage.Components
         }
 
         #endregion
-
     }
 }

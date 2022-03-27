@@ -60,6 +60,7 @@
     <Compile Include="ECSPackage\Components\VelocityComponent.cs" />
     <Compile Include="ECSPackage\Delegates\Delegates.cs" />
     <Compile Include="ECSPackage\Delegates\Interfaces\IInitialiseCreateDel.cs" />
+    <Compile Include="ECSPackage\Delegates\Interfaces\IInitialiseCreateMultiDel.cs" />
     <Compile Include="ECSPackage\Delegates\Interfaces\IInitialiseDeleteDel.cs" />
     <Compile Include="ECSPackage\Entities\Entity.cs" />
     <Compile Include="ECSPackage\Entities\Interfaces\IRtnROIComponentDictionary.cs" />
@@ -91,6 +92,13 @@
     <Compile Include="ECSPackage\Systems\MovementSystem.cs" />
     <Compile Include="ECSPackage\Systems\System.cs" />
     <Compile Include="Kernel.cs" />
+    <Compile Include="PerformanceMeasure.cs" />
+    <Compile Include="PongPackage\Forms\CreationScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PongPackage\Forms\CreationScreen.Designer.cs">
+      <DependentUpon>CreationScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="PongPackage\Responders\Interfaces\ITestKBInput.cs" />
     <Compile Include="PongPackage\Responders\PaddleInputResponder.cs" />
     <Compile Include="PongPackage\Responders\PongEntityCollisionResponder.cs" />
@@ -107,6 +115,8 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -117,7 +127,11 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="PongPackage\Forms\CreationScreen.resx">
+      <DependentUpon>CreationScreen.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

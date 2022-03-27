@@ -4,7 +4,6 @@ using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Delegates;
 using COMP3401_Project.ECSPackage.Delegates.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Interfaces;
 
 namespace COMP3401_Project.PongPackage.Responders
@@ -123,11 +122,37 @@ namespace COMP3401_Project.PongPackage.Responders
                 // IF pEntity has exited left side of the screen:
                 if (_tempTfComp.Position.X <= _minXYBounds.X || _tempTfComp.Position.X >= _maxXYBounds.X - _tempTexSize.X)
                 {
+                    // MULTIPLY _tempVel.X by '-1':
+                    _tempVel.X *= -1;
+
+                    // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
+                    _tempVelComp.Velocity = _tempVel;
+
+
+                    if (_tempTfComp.Position.X <= _minXYBounds.X)
+                    {
+                        // SET
+                        _tempTfComp.Position = new Vector2(_minXYBounds.X, _tempTfComp.Position.Y);
+                    }
+
+
+                    if (_tempTfComp.Position.X >= _maxXYBounds.X - _tempTexSize.X)
+                    {
+                        // SET
+                        _tempTfComp.Position = new Vector2(_maxXYBounds.X - _tempTexSize.X, _tempTfComp.Position.Y);
+                    }
+
+
+
+                    /*
+
                     // CALL _terminate, passing pInt as a parameter:
                     _terminate(pEntity.UID);
 
                     // CALL _create():
                     _create();
+
+                    */
                 }
 
                 #endregion

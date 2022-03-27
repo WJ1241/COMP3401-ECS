@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Entities.Interfaces;
 using COMP3401_Project.ECSPackage.Exceptions;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
@@ -9,7 +9,7 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
     /// <summary>
     /// Class which contains the master list of entities in the game level
     /// Author: William Smith
-    /// Date: 09/02/22
+    /// Date: 27/03/22
     /// </summary>
     public class EntityManager : IEntityManager, IInitialiseISceneManager, IRtnEntityDictionary
     {
@@ -56,6 +56,12 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pID"> ID value of Entity in scene </param>
         public void Terminate(int pID)
         {
+            // DISPOSE of _entityDict[pID]'s TextureComponent's Texture:
+            ((_entityDict[pID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture.Dispose();
+
+            // DISPOSE of _entityDict[pID]'s TextureComponent's Texture:
+            ((_entityDict[pID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = null;
+
             // CALL Remove() on _sceneManager:
             _sceneManager.Remove(pID);
 

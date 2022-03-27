@@ -162,7 +162,7 @@ namespace COMP3401_Project.PongPackage.Responders
                     // ELSE IF Down Arrow Key is down:
                     else if (_currentKey == "Down")
                     {
-                        // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians:
+                        // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians (180 degrees n ):
                         _tempTfComp.RotationAngle = (float)Math.PI;
 
                         // SET direction of pEntity to '1' to move downwards:
