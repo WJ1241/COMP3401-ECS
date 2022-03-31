@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ClosedXML.Excel;
 using COMP3401_Project.ECSPackage.Components;
 using COMP3401_Project.ECSPackage.Components.Interfaces;
 using COMP3401_Project.ECSPackage.Delegates.Interfaces;
@@ -18,13 +20,15 @@ using COMP3401_Project.ECSPackage.Systems.Managers;
 using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
 using COMP3401_Project.PongPackage.Forms;
 using COMP3401_Project.PongPackage.Responders;
+using COMP3401_Project_ProjectHWTest;
+using COMP3401_Project.ProjectHWTest.Interfaces;
 
 namespace COMP3401_Project
 {
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 27/03/22
+    /// Date: 31/03/22
     /// </summary>
     public class Kernel : Game
     {
@@ -130,8 +134,16 @@ namespace COMP3401_Project
             // INSTANTIATE _serviceDict as a new Dictionary<string, IService>():
             _serviceDict = new Dictionary<string, IService>();
 
+            #endregion
+
+
+            #region FACTORY INSTANTIATIONS
+
             // ADD a new Factory<IService>() to _serviceDict:
             _serviceDict.Add("ServiceFactory", new Factory<IService>());
+
+            // ADD a new Factory<IDisposable>() to _serviceDict:
+            _serviceDict.Add("DisposableFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IDisposable>>());
 
             // ADD a new Factory<IEntity>() to _serviceDict:
             _serviceDict.Add("EntityFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IEntity>>());
@@ -152,7 +164,7 @@ namespace COMP3401_Project
 
             #region ENTITY MANAGER
 
-            // INSTANTIATE _serviceDict["EntityManager"] as a new EntityManager():
+            // ADD a new EntityManager() to _serviceDict:
             _serviceDict.Add("EntityManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<EntityManager>());
 
             // STORE reference to master entity list locally for easier reuse:
@@ -163,7 +175,7 @@ namespace COMP3401_Project
 
             #region SCENE MANAGER
 
-            // INSTANTIATE _serviceDict["SceneManager"] as a new SceneManager():
+            // ADD a new SceneManager() to _serviceDict:
             _serviceDict.Add("SceneManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneManager>());
 
             // INITIALISE _serviceDict["SceneManager"] with a new SceneGraph():
@@ -173,6 +185,23 @@ namespace COMP3401_Project
             (_serviceDict["EntityManager"] as IInitialiseISceneManager).Initialise(_serviceDict["SceneManager"] as ISceneManager);
 
             #endregion
+
+            #endregion
+
+
+            #region PERFORMANCE MEASURE INSTANTIATION & INITIALISATIONS
+
+            // ADD a new PerformanceMeasure() to _serviceDict:
+            _serviceDict.Add("PerformanceMeasure", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<PerformanceMeasure>());
+
+            // INITIALISE _serviceDict with a new Stopwatch():
+            (_serviceDict["PerformanceMeasure"] as IInitialiseStopwatch).Initialise(new Stopwatch());
+
+            // INITIALISE _serviceDict with a new XLWorkbook():
+            (_serviceDict["PerformanceMeasure"] as IExportExcelData).Initialise((_serviceDict["DisposableFactory"] as IFactory<IDisposable>).Create<XLWorkbook>() as XLWorkbook);
+
+            // INITIALISE _serviceDict with a new PerformanceCounter():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise((_serviceDict["DisposableFactory"] as IFactory<IDisposable>).Create<PerformanceCounter>() as PerformanceCounter);
 
             #endregion
 
@@ -512,7 +541,7 @@ namespace COMP3401_Project
         protected override void Draw(GameTime pGameTime)
         {
             // SET colour of background:
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
 
             // CALL Draw() on _sceneManager, passing _spriteBatch as a parameter:
             //(_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
@@ -649,6 +678,15 @@ namespace COMP3401_Project
         /// <param name="pInt"> Number of entities to be deleted </param>
         private void DeleteMultipleEntities(int pInt)
         {
+
+            IList<float> valueList = new List<float>();
+
+            valueList.Add(2);
+            valueList.Add(54);
+            valueList.Add(83);
+
+            (_serviceDict["PerformanceMeasure"] as IExportExcelData).ExportToExcel("TerminationTest", valueList);
+
             // IF pInt DOES NOT exceed the number of entities in _entityDict:
             if (pInt <= _entityDict.Count)
             {
