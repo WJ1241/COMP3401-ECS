@@ -56,12 +56,6 @@ namespace COMP3401_Project.ECSPackage.Systems.Managers
         /// <param name="pID"> ID value of Entity in scene </param>
         public void Terminate(int pID)
         {
-            // DISPOSE of _entityDict[pID]'s TextureComponent's Texture:
-            ((_entityDict[pID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture.Dispose();
-
-            // DISPOSE of _entityDict[pID]'s TextureComponent's Texture:
-            ((_entityDict[pID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture = null;
-
             // CALL Remove() on _sceneManager:
             _sceneManager.Remove(pID);
 

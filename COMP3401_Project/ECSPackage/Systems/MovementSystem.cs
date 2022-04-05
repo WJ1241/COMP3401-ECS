@@ -111,13 +111,13 @@ namespace COMP3401_Project.ECSPackage.Systems
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)
             {
-                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
-                IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
+                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it 'tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
+                IReadOnlyDictionary<string, IComponent> tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
 
-                if (_tempCompDict.ContainsKey("VelocityComponent"))
+                if (tempCompDict.ContainsKey("VelocityComponent"))
                 {
                     // FOREACH IComponent in currently selected entity's component dictionary:
-                    foreach (IComponent pComponent in _tempCompDict.Values)
+                    foreach (IComponent pComponent in tempCompDict.Values)
                     {
                         // IF pComponent implements IPosition:
                         if (pComponent is IPosition)

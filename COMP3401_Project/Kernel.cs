@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -28,7 +29,7 @@ namespace COMP3401_Project
     /// <summary>
     /// Main Class of ECS System
     /// Author: William Smith
-    /// Date: 31/03/22
+    /// Date: 04/04/22
     /// </summary>
     public class Kernel : Game
     {
@@ -145,6 +146,9 @@ namespace COMP3401_Project
             // ADD a new Factory<IDisposable>() to _serviceDict:
             _serviceDict.Add("DisposableFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IDisposable>>());
 
+            // ADD a new Factory<IEnumerable>() to _serviceDict:
+            _serviceDict.Add("EnumerableFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IEnumerable>>());
+
             // ADD a new Factory<IEntity>() to _serviceDict:
             _serviceDict.Add("EntityFactory", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<Factory<IEntity>>());
 
@@ -194,14 +198,29 @@ namespace COMP3401_Project
             // ADD a new PerformanceMeasure() to _serviceDict:
             _serviceDict.Add("PerformanceMeasure", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<PerformanceMeasure>());
 
-            // INITIALISE _serviceDict with a new Stopwatch():
+            // INITIALISE _serviceDict["PerformanceMeasure"] with a new Stopwatch():
             (_serviceDict["PerformanceMeasure"] as IInitialiseStopwatch).Initialise(new Stopwatch());
 
-            // INITIALISE _serviceDict with a new XLWorkbook():
+            // INITIALISE _serviceDict["PerformanceMeasure"] with a new XLWorkbook():
             (_serviceDict["PerformanceMeasure"] as IExportExcelData).Initialise((_serviceDict["DisposableFactory"] as IFactory<IDisposable>).Create<XLWorkbook>() as XLWorkbook);
 
-            // INITIALISE _serviceDict with a new PerformanceCounter():
-            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise((_serviceDict["DisposableFactory"] as IFactory<IDisposable>).Create<PerformanceCounter>() as PerformanceCounter);
+            // INITIALISE _serviceDict["PerformanceMeasure"] with a new List<long>():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise((_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<long>>() as IList<long>);
+
+            // INITIALISE _serviceDict["PerformanceMeasure"] with "CPU" and a new PerformanceCounter():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("CPU", new PerformanceCounter("Process", "% Processor Time", "COMP3401_Project"));
+
+            // INITIALISE _serviceDict["PerformanceMeasure"] with "CPU" and a new List<float>():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("CPU", (_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<float>>() as IList<float>);
+
+            // INITIALISE _serviceDict["PerformanceMeasure"] with "RAM" and a new PerformanceCounter():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("RAM", new PerformanceCounter("Process", "Working Set", "COMP3401_Project"));
+
+            // INITIALISE _serviceDict["PerformanceMeasure"] with "RAM" and a new List<float>():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("RAM", (_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<float>>() as IList<float>);
+
+            // INITIALISE _serviceDict["PerformanceMeasure"] with "FPS" and a new List<float>():
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("FPS", (_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<float>>() as IList<float>);
 
             #endregion
 
@@ -210,22 +229,22 @@ namespace COMP3401_Project
 
             #region DRAW SYSTEM
 
-            // DECLARE & INSTANTIATE a new DrawSystem(), name it '_tempUpdatable':
-            IUpdatable _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<DrawSystem>();
+            // DECLARE & INSTANTIATE a new DrawSystem(), name it 'tempUpdatable':
+            IUpdatable tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<DrawSystem>();
 
             // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
 
             #endregion
 
 
             #region MOVEMENT SYSTEM
 
-            // INSTANTIATE _tempUpdatable as new MovementSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
+            // INSTANTIATE tempUpdatable as new MovementSystem():
+            tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
 
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+            // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
 
             #region IMOVEMENTBOUNDRESPONDER INITIALISATION
 
@@ -246,8 +265,8 @@ namespace COMP3401_Project
 
             #endregion
 
-            // INITIALISE _tempUpdatable with _mmBoundResponder:
-            (_tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
+            // INITIALISE tempUpdatable with _mmBoundResponder:
+            (tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
 
 
             #endregion
@@ -255,28 +274,28 @@ namespace COMP3401_Project
 
             #region INPUT SYSTEM
 
-            // INSTANTIATE _tempUpdatable as new InputSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
+            // INSTANTIATE tempUpdatable as new InputSystem():
+            tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
 
-            // INITIALISE _tempUpdatable with a new PaddleInputResponder():
-            (_tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
+            // INITIALISE tempUpdatable with a new PaddleInputResponder():
+            (tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
 
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+            // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
 
             #endregion
 
 
             #region COLLISION SYSTEM
 
-            // INSTANTIATE _tempUpdatable as new CollisionSystem():
-            _tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
+            // INSTANTIATE tempUpdatable as new CollisionSystem():
+            tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
 
-            // INITIALISE _tempUpdatable with a new PongEntityCollisionResponder():
-            (_tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
+            // INITIALISE tempUpdatable with a new PongEntityCollisionResponder():
+            (tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
 
-            // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(_tempUpdatable);
+            // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
+            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
 
             #endregion
 
@@ -292,14 +311,14 @@ namespace COMP3401_Project
                 // ASSIGN _pongEntityID with value of 'i':
                 _pongEntityID = i;
 
-                // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
-                IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
+                // DECLARE & INSTANTIATE an IEntity as a new Entity, name it 'tempEntity':
+                IEntity tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
 
-                // ASSIGN UID to _tempEntity:
-                _tempEntity.UID = _pongEntityID;
+                // ASSIGN UID to tempEntity:
+                tempEntity.UID = _pongEntityID;
 
-                // ADD _tempEntity to _serviceDict['EntityManager']:
-                (_serviceDict["EntityManager"] as IEntityManager).AddEntity(_tempEntity);
+                // ADD tempEntity to _serviceDict['EntityManager']:
+                (_serviceDict["EntityManager"] as IEntityManager).AddEntity(tempEntity);
             }
 
             #endregion
@@ -385,14 +404,14 @@ namespace COMP3401_Project
 
             #region BACKGROUND
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _entityDict[0]'s TextureComponent:
-            ITexture _tempTexComp = (_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _entityDict[0]'s TextureComponent:
+            ITexture tempTexComp = (_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // ADD "Background" texture to _entityDict[0]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Background", Content.Load<Texture2D>("Background"));
+            tempTexComp.ReturnTextureDict().Add("Background", Content.Load<Texture2D>("Background"));
 
             // LOAD "Background" as the texture of _entityDict[0]'s TextureComponent:
-            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Background"];
+            tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Background"];
 
             // SET Layer of _entityDict[0]'s LayerComponent to '1':
             ((_entityDict[0] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 1;
@@ -402,17 +421,17 @@ namespace COMP3401_Project
 
             #region PADDLE 1
 
-            // INITIALISE _tempTexComp with instance of _entityDict[0]'s TextureComponent:
-            _tempTexComp = (_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // INITIALISE tempTexComp with instance of _entityDict[0]'s TextureComponent:
+            tempTexComp = (_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // ADD "Paddle1_DFLT" texture to _entityDict[1]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Paddle1_DFLT", Content.Load<Texture2D>("Paddle1_DFLT"));
+            tempTexComp.ReturnTextureDict().Add("Paddle1_DFLT", Content.Load<Texture2D>("Paddle1_DFLT"));
 
             // ADD "Paddle1_INPT" texture to _entityDict[1]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Paddle1_INPT", Content.Load<Texture2D>("Paddle1_INPT"));
+            tempTexComp.ReturnTextureDict().Add("Paddle1_INPT", Content.Load<Texture2D>("Paddle1_INPT"));
 
             // LOAD "Paddle1_DFLT" as the texture of _entityDict[1]'s TextureComponent:
-            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
+            tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
 
             // SET Speed of _entityDict[1]'s VelocityComponent:
             ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
@@ -428,17 +447,17 @@ namespace COMP3401_Project
 
             #region PADDLE 2
 
-            // INITIALISE _tempTexComp with instance of _entityDict[2]'s TextureComponent:
-            _tempTexComp = (_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // INITIALISE tempTexComp with instance of _entityDict[2]'s TextureComponent:
+            tempTexComp = (_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // ADD "Paddle2_DFLT" texture to _entityDict[2]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Paddle2_DFLT", Content.Load<Texture2D>("Paddle2_DFLT"));
+            tempTexComp.ReturnTextureDict().Add("Paddle2_DFLT", Content.Load<Texture2D>("Paddle2_DFLT"));
 
             // ADD "Paddle2_INPT" texture to _entityDict[2]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Paddle2_INPT", Content.Load<Texture2D>("Paddle2_INPT"));
+            tempTexComp.ReturnTextureDict().Add("Paddle2_INPT", Content.Load<Texture2D>("Paddle2_INPT"));
 
             // LOAD "Paddle2_DFLT" as the texture of _entityDict[2]'s TextureComponent:
-            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
+            tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
 
             // SET Speed of _entityDict[2]'s VelocityComponent:
             ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Speed = 10;
@@ -467,28 +486,28 @@ namespace COMP3401_Project
 
             #region PADDLE 1
 
-            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from _entityDict[1] to be spawned on screen:
-            Texture2D _tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+            // DECLARE & INITIALISE a Texture2D, name it 'tempTexture', get Texture from _entityDict[1] to be spawned on screen:
+            Texture2D tempTexture = ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
             // SET Origin of _entityDict[1]'s TransformComponent, centre of Texture:
-            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+            ((_entityDict[1] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(tempTexture.Width / 2, tempTexture.Height / 2);
 
             // SPAWN _entityDict[1] with Position at left side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(_tempTexture.Width, _screenSize.Y / 2));
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[1], new Vector2(tempTexture.Width, _screenSize.Y / 2));
 
             #endregion
 
 
             #region PADDLE 2
 
-            // INITIALISE _tempTexture with the Texture from _entityDict[2]:
-            _tempTexture = ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+            // INITIALISE tempTexture with the Texture from _entityDict[2]:
+            tempTexture = ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
             // SET Origin of _entityDict[2]'s TransformComponent, centre of Texture:
-            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(_tempTexture.Width / 2, _tempTexture.Height / 2);
+            ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation).Origin = new Vector2(tempTexture.Width / 2, tempTexture.Height / 2);
 
             // SPAWN _entityDict[2] with Position at right side of screen with some space:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[2], new Vector2(_screenSize.X - _tempTexture.Width, _screenSize.Y / 2));
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[2], new Vector2(_screenSize.X - tempTexture.Width, _screenSize.Y / 2));
 
             #endregion
 
@@ -501,6 +520,9 @@ namespace COMP3401_Project
             #endregion
 
             */
+
+            // CALL CreateMultipleEntities(), passing 350 as a parameter:
+            CreateMultipleEntities(350);
 
             #endregion
         }
@@ -526,9 +548,12 @@ namespace COMP3401_Project
                 // CALL Exit():
                 Exit();
             }
-
+           
             // CALL Update() on _serviceDict["SceneManager"], passing pGameTime as a parameter:
-            //(_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
+            (_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
+
+            // CALL LongTimedTest() on _serviceDict["PerformanceMeasure"], passing pGameTime as a parameter:
+            //(_serviceDict["PerformanceMeasure"] as ITestPerformance).LongTimedTest(pGameTime);
 
             // CALL Update() on base class, passing pGameTime as a parameter:
             base.Update(pGameTime);
@@ -541,10 +566,14 @@ namespace COMP3401_Project
         protected override void Draw(GameTime pGameTime)
         {
             // SET colour of background:
-            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // CALL Draw() on _sceneManager, passing _spriteBatch as a parameter:
-            //(_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
+            (_serviceDict["SceneManager"] as IDraw).Draw(_spriteBatch);
+
+            // CALL TestFPS() on _serviceDict["PerformanceMeasure"], passing pGameTime as a parameter:
+            // CALLED IN DRAW() AS UPDATE() DOES NOT CHANGE FPS
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).TestFPS(pGameTime);
 
             // CALL Draw() on base class, passing pGameTime as a parameter:
             base.Draw(pGameTime);
@@ -565,14 +594,14 @@ namespace COMP3401_Project
             // INCREMENT _pongEntityID by 1:
             _pongEntityID++;
 
-            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
-            IEntity _tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
+            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it 'tempEntity':
+            IEntity tempEntity = (_serviceDict["EntityFactory"] as IFactory<IEntity>).Create<Entity>();
 
-            // ASSIGN UID to _tempEntity:
-            _tempEntity.UID = _pongEntityID;
+            // ASSIGN UID to tempEntity:
+            tempEntity.UID = _pongEntityID;
 
-            // ADD _tempEntity as a value, and _tempEntity.UID as a key to _entityDict:
-            _entityDict.Add(_tempEntity.UID, _tempEntity);
+            // ADD tempEntity as a value, and tempEntity.UID as a key to _entityDict:
+            _entityDict.Add(tempEntity.UID, tempEntity);
 
             #endregion
 
@@ -599,14 +628,14 @@ namespace COMP3401_Project
 
             #region SETTING COMPONENT VALUES
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _entityDict[_pongEntityID]'s TextureComponent:
-            ITexture _tempTexComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _entityDict[_pongEntityID]'s TextureComponent:
+            ITexture tempTexComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // ADD "Football" texture to _entityDict[_pongEntityID]'s TextureComponent's Dictionary:
-            _tempTexComp.ReturnTextureDict().Add("Football", Content.Load<Texture2D>("Football"));
+            tempTexComp.ReturnTextureDict().Add("Football", Content.Load<Texture2D>("Football"));
 
             // LOAD "Football" as the texture of _entityDict[_pongEntityID]'s TextureComponent:
-            _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Football"];
+            tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Football"];
 
             // SET Layer of _entityDict[_pongEntityID]'s LayerComponent to '3':
             ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
@@ -630,17 +659,17 @@ namespace COMP3401_Project
                 _randDir.Y *= -1;
             }
 
-            // DECLARE & INITIALISE an IVelocity, name it '_tempVelComp', give value of _entityDict[_pongEntityID]'s VelocityComponent:
-            IVelocity _tempVelComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, name it 'tempVelComp', give value of _entityDict[_pongEntityID]'s VelocityComponent:
+            IVelocity tempVelComp = (_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
             // SET Speed of _entityDict[_pongEntityID]'s VelocityComponent with value of '5':
-            _tempVelComp.Speed = 5;
+            tempVelComp.Speed = 5;
 
             // SET Direction of _entityDict[_pongEntityID]'s VelocityComponent with value of _randDir:
-            _tempVelComp.Direction = _randDir;
+            tempVelComp.Direction = _randDir;
 
             // SET Velocity of _entityDict[_pongEntityID]'s VelocityComponent with it's Speed Property multiplied by it's Direction Property:
-            _tempVelComp.Velocity = _tempVelComp.Speed * _tempVelComp.Direction;
+            tempVelComp.Velocity = tempVelComp.Speed * tempVelComp.Direction;
 
             #endregion
 
@@ -649,11 +678,11 @@ namespace COMP3401_Project
 
             #region SPAWN
 
-            // DECLARE & INITIALISE a Texture2D, name it '_tempTexture', get Texture from entity to be spawned on screen:
-            Texture2D _tempTexture = ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
+            // DECLARE & INITIALISE a Texture2D, name it 'tempTexture', get Texture from entity to be spawned on screen:
+            Texture2D tempTexture = ((_entityDict[_pongEntityID] as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).Texture;
 
             // SPAWN _entityDict[_pongEntityID] with Position at the centre of screen:
-            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[_pongEntityID], new Vector2((_screenSize.X / 2) - (_tempTexture.Width / 2), (_screenSize.Y / 2) - (_tempTexture.Height / 2)));
+            (_serviceDict["SceneManager"] as ISpawnEntity).Spawn(_entityDict[_pongEntityID], new Vector2((_screenSize.X / 2) - (tempTexture.Width / 2), (_screenSize.Y / 2) - (tempTexture.Height / 2)));
 
             #endregion
         }
@@ -664,12 +693,33 @@ namespace COMP3401_Project
         /// <param name="pInt"> Number of entities to be created </param>
         private void CreateMultipleEntities(int pInt)
         {
+            //// DECLARE & INSTANTIATE a Stopwatch, name it 'tempStopwatch':
+            //Stopwatch tempStopwatch = new Stopwatch();
+
             // FORLOOP, iterate for as many times specified by pInt:
             for (int i = 0; i < pInt; i++)
             {
+                //// RESET tempStopwatch():
+                //tempStopwatch.Reset();
+
+                //// START tempStopwatch():
+                //tempStopwatch.Start();
+
                 // CALL CreateBall():
                 CreateBall();
+
+                //// STOP tempStopwatch:
+                //tempStopwatch.Stop();
+
+                //// CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, tempStopWatch's elapsed ms, and FALSE as parameters:
+                //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
             }
+
+            //// CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, 0 as null cannot be used, and TRUE as parameters:
+            //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", 0, true);
+
+            // CALL UpdateLongTimedTest() on _serviceDict["PerformanceMeasure"]:
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).UpdateLongTimedTest();
         }
 
         /// <summary>
@@ -678,14 +728,8 @@ namespace COMP3401_Project
         /// <param name="pInt"> Number of entities to be deleted </param>
         private void DeleteMultipleEntities(int pInt)
         {
-
-            IList<float> valueList = new List<float>();
-
-            valueList.Add(2);
-            valueList.Add(54);
-            valueList.Add(83);
-
-            (_serviceDict["PerformanceMeasure"] as IExportExcelData).ExportToExcel("TerminationTest", valueList);
+            // DECLARE & INSTANTIATE a Stopwatch, name it 'tempStopwatch':
+            //Stopwatch tempStopwatch = new Stopwatch();
 
             // IF pInt DOES NOT exceed the number of entities in _entityDict:
             if (pInt <= _entityDict.Count)
@@ -696,12 +740,27 @@ namespace COMP3401_Project
                 // FORLOOP, iterate for as many times specified by pInt:
                 for (int i = tempEntCount; i > tempEntCount - pInt; i--)
                 {
+                    //// RESET tempStopwatch():
+                    //tempStopwatch.Reset();
+
+                    //// START tempStopwatch():
+                    //tempStopwatch.Start();
+
                     // REMOVE entity stored at address 'i' from "EntityManager":
                     (_serviceDict["EntityManager"] as IEntityManager).Terminate(i);
+
+                    // STOP tempStopwatch:
+                    //tempStopwatch.Stop();
+
+                    // CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, tempStopWatch's elapsed ms, and FALSE as parameters:
+                    //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("TerminationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
 
                     // DECREMENT _pongEntityID by '1':
                     _pongEntityID--;
                 }
+
+                // CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, 0 as null cannot be used, and TRUE as parameters:
+                //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("TerminationTest", "ShortTest", 0, true);
 
                 // CALL Collect on Garbage Collector to ensure memory collection after termination:
                 GC.Collect();

@@ -48,11 +48,11 @@ namespace COMP3401_Project.PongPackage.Responders
             // DECLARE & INITIALISE a KeyboardState, name it '_kBState', give value of current Keyboard state:
             KeyboardState _kBState = Keyboard.GetState();
 
-            // DECLARE & INITIALISE an IRotation, name it '_tempTfComp', give instance of pEntity's TransformComponent:
-            IRotation _tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation;
+            // DECLARE & INITIALISE an IRotation, name it 'tempTfComp', give instance of pEntity's TransformComponent:
+            IRotation tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IRotation;
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of pEntity's TextureComponent:
-            ITexture _tempTexComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of pEntity's TextureComponent:
+            ITexture tempTexComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // DECLARE & INITIALISE a PlayerIndex, name it '_currentPlayerNum', give value of current entity's PlayerID Property:
             PlayerIndex _currentPlayerNum = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["PlayerComponent"] as IPlayer).PlayerID;
@@ -78,27 +78,27 @@ namespace COMP3401_Project.PongPackage.Responders
 
 
                 // IF Player 1 HAS been assigned a texture named "Paddle1_DFLT":
-                if (_tempTexComp.ReturnTextureDict().ContainsKey("Paddle1_DFLT"))
+                if (tempTexComp.ReturnTextureDict().ContainsKey("Paddle1_DFLT"))
                 {
                     // SET Texture of pEntity's TextureComponent to "Paddle1_DFLT, works for idling":
-                    _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
+                    tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle1_DFLT"];
                 }
 
                 // IF W OR S Key is down:
                 if (_currentKey == "W" || _currentKey == "S")
                 {
                     // IF Player 1 HAS been assigned a texture named "Paddle1_INPT":
-                    if (_tempTexComp.ReturnTextureDict().ContainsKey("Paddle1_INPT"))
+                    if (tempTexComp.ReturnTextureDict().ContainsKey("Paddle1_INPT"))
                     {
                         // SET Texture of pEntity's TextureComponent to "Paddle1_INPT":
-                        _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle1_INPT"];
+                        tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle1_INPT"];
                     }
 
                     // IF W Key is down:
                     if (_currentKey == "W")
                     {
                         // SET value of pEntity's TransformComponent's RotationAngle Property to '0', measured in radians:
-                        _tempTfComp.RotationAngle = 0;
+                        tempTfComp.RotationAngle = 0;
 
                         // SET direction of pEntity to '-1' to move upwards:
                         ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
@@ -108,7 +108,7 @@ namespace COMP3401_Project.PongPackage.Responders
                     else if (_currentKey == "S")
                     {
                         // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians:
-                        _tempTfComp.RotationAngle = (float)Math.PI;
+                        tempTfComp.RotationAngle = (float)Math.PI;
 
                         // SET direction of pEntity to '1' to move downwards:
                         ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
@@ -133,27 +133,27 @@ namespace COMP3401_Project.PongPackage.Responders
                 }
 
                 // IF Player 2 HAS been assigned a texture named "Paddle2_DFLT":
-                if (_tempTexComp.ReturnTextureDict().ContainsKey("Paddle2_DFLT"))
+                if (tempTexComp.ReturnTextureDict().ContainsKey("Paddle2_DFLT"))
                 {
                     // SET Texture of pEntity's TextureComponent to "Paddle2_DFLT, works for idling":
-                    _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
+                    tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle2_DFLT"];
                 }
 
                 // IF Up OR Down Key is down:
                 if (_currentKey == "Up" || _currentKey == "Down")
                 {
                     // IF Player 2 HAS been assigned a texture named "Paddle2_INPT":
-                    if (_tempTexComp.ReturnTextureDict().ContainsKey("Paddle2_INPT"))
+                    if (tempTexComp.ReturnTextureDict().ContainsKey("Paddle2_INPT"))
                     {
                         // SET Texture of pEntity's TextureComponent to "Paddle2_INPT":
-                        _tempTexComp.Texture = _tempTexComp.ReturnTextureDict()["Paddle2_INPT"];
+                        tempTexComp.Texture = tempTexComp.ReturnTextureDict()["Paddle2_INPT"];
                     }
 
                     // IF Up Arrow Key is down:
                     if (_currentKey == "Up")
                     {
                         // SET value of pEntity's TransformComponent's RotationAngle Property to '0', measured in radians:
-                        _tempTfComp.RotationAngle = 0;
+                        tempTfComp.RotationAngle = 0;
 
                         // SET direction of pEntity to '-1' to move upwards:
                         ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, -1);
@@ -163,7 +163,7 @@ namespace COMP3401_Project.PongPackage.Responders
                     else if (_currentKey == "Down")
                     {
                         // SET value of pEntity's TransformComponent's RotationAngle Property to PI, measured in radians (180 degrees n ):
-                        _tempTfComp.RotationAngle = (float)Math.PI;
+                        tempTfComp.RotationAngle = (float)Math.PI;
 
                         // SET direction of pEntity to '1' to move downwards:
                         ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity).Direction = new Vector2(0, 1);
@@ -171,11 +171,11 @@ namespace COMP3401_Project.PongPackage.Responders
                 }
             }
 
-            // DECLARE & INITIALISE an IVelocity, give value of pEntity's Velocity Component, name it'_tempVelComp':
-            IVelocity _tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, give value of pEntity's Velocity Component, name it'tempVelComp':
+            IVelocity tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-            // ASSIGN value of _tempVelComp.Speed multiplied by _tempVelComp.Direction to _tempVelComp.Velocity:
-            _tempVelComp.Velocity = _tempVelComp.Speed * _tempVelComp.Direction;
+            // ASSIGN value of tempVelComp.Speed multiplied by tempVelComp.Direction to tempVelComp.Velocity:
+            tempVelComp.Velocity = tempVelComp.Speed * tempVelComp.Direction;
 
             // RESET _currentKey to a blank string:
             _currentKey = "";

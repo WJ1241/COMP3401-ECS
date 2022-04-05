@@ -100,11 +100,11 @@ namespace COMP3401_Project.ECSPackage.Systems
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)
             {
-                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
-                IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
+                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it 'tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
+                IReadOnlyDictionary<string, IComponent> tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
                 
-                // IF _tempCompDict contains a PlayerComponent:
-                if (_tempCompDict.ContainsKey("PlayerComponent"))
+                // IF tempCompDict contains a PlayerComponent:
+                if (tempCompDict.ContainsKey("PlayerComponent"))
                 {
                     // ADD Player Entity to _playerEntityDict as a value, and their UID as a key:
                     _playerEntityDict.Add(_roEntityDict[pInt].UID, _roEntityDict[pInt]);

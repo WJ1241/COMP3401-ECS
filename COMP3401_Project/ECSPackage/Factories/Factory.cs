@@ -21,14 +21,14 @@ namespace COMP3401_Project.ECSPackage.Factories
         /// <returns> Instance of C typed as A </returns>
         public A Create<C>() where C : A, new()
         {
-            // DECLARE an A, name it '_tempObj':
-            A _tempObj;
+            // DECLARE an A, name it 'tempObj':
+            A tempObj;
 
             // TRY checking if class implements A:
             try
             {
-                // INSTANTIATE _tempObj as A new C():
-                _tempObj = new C();
+                // INSTANTIATE tempObj as A new C():
+                tempObj = new C();
             }
             // CATCH Exception from creation of object:
             catch (Exception)
@@ -37,8 +37,8 @@ namespace COMP3401_Project.ECSPackage.Factories
                 throw new ClassDoesNotExistException("ERROR: Class passed through parameter of method does not exist or implement Type in place of 'A'!");
             }
 
-            // RETURN instance of _tempObj:
-            return _tempObj;
+            // RETURN instance of tempObj:
+            return tempObj;
         }
 
         #endregion

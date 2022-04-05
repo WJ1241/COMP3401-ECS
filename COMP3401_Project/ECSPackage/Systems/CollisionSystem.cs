@@ -107,16 +107,16 @@ namespace COMP3401_Project.ECSPackage.Systems
             }
 
             // DECLARE an IList<IContainHitBox>, give value of _hitBoxCompDict.Values as a List:
-            IList<IContainHitBox> _tempHitBoxList = _hitBoxCompDict.Values.ToList();
+            IList<IContainHitBox> tempHitBoxList = _hitBoxCompDict.Values.ToList();
 
-            // FOR LOOP, Iterates over count of _tempHitBoxList - 1 so that first entity cannot collide with itself:
-            for (int i = 0; i < (_tempHitBoxList.Count - 1); i++)
+            // FOR LOOP, Iterates over count of tempHitBoxList - 1 so that first entity cannot collide with itself:
+            for (int i = 0; i < (tempHitBoxList.Count - 1); i++)
             {
-                // FOR LOOP, Iterates over count of _tempHitBoxList + 1 so that second entity cannot collide with itself:
-                for (int j = i + 1; j < _tempHitBoxList.Count; j++)
+                // FOR LOOP, Iterates over count of tempHitBoxList + 1 so that second entity cannot collide with itself:
+                for (int j = i + 1; j < tempHitBoxList.Count; j++)
                 { 
                     // IF First Entity (i) Collides with Second Entity (j):
-                    if (_tempHitBoxList[i].HitBox.Intersects(_tempHitBoxList[j].HitBox))
+                    if (tempHitBoxList[i].HitBox.Intersects(tempHitBoxList[j].HitBox))
                     {
                         // CALL RespondToCollision() on _collisionResponder, passing the first (i) and second (j) collidable entities as parameters:
                         _collisionResponder.RespondToCollision(_hitBoxEntList[i], _hitBoxEntList[j]);
@@ -150,17 +150,17 @@ namespace COMP3401_Project.ECSPackage.Systems
             // FOREACH UID in _roEntityCount:
             foreach (int pInt in _roEntityDict.Keys)
             {
-                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it '_tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
-                IReadOnlyDictionary<string, IComponent> _tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
+                // DECLARE & INITIALISE a IReadOnlyDictionary<string, IComponent>, name it 'tempCompDict', give value of _roEntityDict[pInt]'s Component Dictionary:
+                IReadOnlyDictionary<string, IComponent> tempCompDict = (_roEntityDict[pInt] as IRtnROIComponentDictionary).ReturnComponentDictionary();
 
-                // IF _tempCompDict contains a HitBoxComponent:
-                if (_tempCompDict.ContainsKey("HitBoxComponent"))
+                // IF tempCompDict contains a HitBoxComponent:
+                if (tempCompDict.ContainsKey("HitBoxComponent"))
                 {
                     // ADD _roEntityDict[pInt] to _hitBoxEntList:
                     _hitBoxEntList.Add(_roEntityDict[pInt]);
 
                     // FOREACH IComponent in currently selected entity's component dictionary:
-                    foreach (IComponent pComponent in _tempCompDict.Values)
+                    foreach (IComponent pComponent in tempCompDict.Values)
                     {
                         // IF pComponent implements IContainHitBox:
                         if (pComponent is IContainHitBox)

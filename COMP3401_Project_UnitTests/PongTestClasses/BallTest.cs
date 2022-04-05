@@ -49,59 +49,59 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
 
             #region CREATION
 
-            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
-            IEntity _tempEntity = new Entity();
+            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it 'tempEntity':
+            IEntity tempEntity = new Entity();
 
-            // ASSIGN UID to _tempEntity:
-            _tempEntity.UID = 1;
+            // ASSIGN UID to tempEntity:
+            tempEntity.UID = 1;
 
             #endregion
 
 
             #region COMPONENT INITIALISATION
 
-            // ADD a new TransformComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new TransformComponent());
+            // ADD a new TransformComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new TransformComponent());
 
-            // ADD a new TextureComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new TextureComponent());
+            // ADD a new TextureComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new TextureComponent());
 
-            // ADD a new HitBoxComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new HitBoxComponent());
+            // ADD a new HitBoxComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new HitBoxComponent());
 
-            // ADD a new VelocityComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new VelocityComponent());
+            // ADD a new VelocityComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new VelocityComponent());
 
-            // ADD a new LayerComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new LayerComponent());
+            // ADD a new LayerComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new LayerComponent());
 
             #endregion
 
 
             #region SETTING COMPONENT VALUES
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _tempEntity's TextureComponent:
-            ITexture _tempTexComp = (_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of tempEntity's TextureComponent:
+            ITexture tempTexComp = (tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // SET & MOCK a texture size of 20x20 to _tempEntity's TextureComponent:
-            _tempTexComp.TexSize = new Point(20, 20);
+            // SET & MOCK a texture size of 20x20 to tempEntity's TextureComponent:
+            tempTexComp.TexSize = new Point(20, 20);
 
-            // SET Layer of _tempEntity's LayerComponent to '3':
-            ((_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
+            // SET Layer of tempEntity's LayerComponent to '3':
+            ((tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 3;
 
-            // DECLARE & INITIALISE an IVelocity, name it '_tempVelComp', give value of _tempEntity's VelocityComponent:
-            IVelocity _tempVelComp = (_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, name it 'tempVelComp', give value of tempEntity's VelocityComponent:
+            IVelocity tempVelComp = (tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-            // SET Speed of _tempEntity's VelocityComponent with value of '5':
-            _tempVelComp.Speed = 5;
+            // SET Speed of tempEntity's VelocityComponent with value of '5':
+            tempVelComp.Speed = 5;
 
             #endregion
 
 
             #region RETURNING ENTITY TO CALLER
 
-            // RETURN instance of _tempEntity:
-            return _tempEntity;
+            // RETURN instance of tempEntity:
+            return tempEntity;
 
             #endregion
         }
@@ -127,7 +127,7 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // DECLARE & INITIALISE an IPosition, give value of _ball's TransformComponent, name it '_ballTfComp':
             IPosition _ballTfComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _ball's TextureComponent:
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _ball's TextureComponent:
             ITexture _ballTexComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // DECLARE & INITIALISE an IVelocity, give value of _ball's VelocityComponent, name it '_ballVelComp':
@@ -198,7 +198,7 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // DECLARE & INITIALISE an IPosition, give value of _ball's TransformComponent, name it '_ballTfComp':
             IPosition _ballTfComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _ball's TextureComponent:
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _ball's TextureComponent:
             ITexture _ballTexComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // DECLARE & INITIALISE an IVelocity, give value of _ball's VelocityComponent, name it '_ballVelComp':
@@ -269,7 +269,7 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // DECLARE & INITIALISE an IPosition, give value of _ball's TransformComponent, name it '_ballTfComp':
             IPosition _ballTfComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _ball's TextureComponent:
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _ball's TextureComponent:
             ITexture _ballTexComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // DECLARE & INITIALISE an IVelocity, give value of _ball's VelocityComponent, name it '_ballVelComp':
@@ -341,17 +341,17 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
 
             #region MANAGERS
 
-            // DECLARE & INSTANTIATE an IEntityManager as a new EntityManager, name it '_entityManager':
-            IEntityManager _entityManager = new EntityManager();
+            // DECLARE & INSTANTIATE an IEntityManager as a new EntityManager, name it 'entityManager':
+            IEntityManager entityManager = new EntityManager();
 
-            // DECLARE & INSTANTIATE an ISceneManager as a new SceneManager, name it '_sceneManager':
-            ISceneManager _sceneManager = new SceneManager();
+            // DECLARE & INSTANTIATE an ISceneManager as a new SceneManager, name it 'sceneManager':
+            ISceneManager sceneManager = new SceneManager();
 
             // INITIALISE _entityManager with _sceneManager:
-            (_entityManager as IInitialiseISceneManager).Initialise(_sceneManager);
+            (entityManager as IInitialiseISceneManager).Initialise(sceneManager);
 
             // INITIALISE _sceneManager with a new SceneGraph():
-            (_sceneManager as IInitialiseISpawnEntity).Initialise(new SceneGraph());
+            (sceneManager as IInitialiseISpawnEntity).Initialise(new SceneGraph());
 
             #endregion
 
@@ -359,25 +359,25 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             #region BALL
 
             // DECLARE & INSTANTIATE an IEntity using CreateBall(), name it '_ball':
-            IEntity _ball = CreateBall();
+            IEntity ball = CreateBall();
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _ball's TextureComponent:
-            ITexture _ballTexComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of ball's TextureComponent:
+            ITexture ballTexComp = (ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // DECLARE & INITIALISE an IVelocity, give value of _ball's VelocityComponent, name it '_ballVelComp':
-            IVelocity _ballVelComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, give value of ball's VelocityComponent, name it 'ballVelComp':
+            IVelocity ballVelComp = (ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-            // SET Direction of _ball to -1, to head left:
-            _ballVelComp.Direction = new Vector2(-1, 0);
+            // SET Direction of ball to -1, to head left:
+            ballVelComp.Direction = new Vector2(-1, 0);
 
-            // SET Velocity of _ball's VelocityComponent with it's Speed Property multiplied by it's Direction Property:
-            _ballVelComp.Velocity = _ballVelComp.Speed * _ballVelComp.Direction;
+            // SET Velocity of ball's VelocityComponent with it's Speed Property multiplied by it's Direction Property:
+            ballVelComp.Velocity = ballVelComp.Speed * ballVelComp.Direction;
 
-            // ADD _tempEntity to _entityManager:
-            _entityManager.AddEntity(_ball);
+            // ADD tempEntity to entityManager:
+            entityManager.AddEntity(ball);
 
-            // SPAWN _ball in left middle of screen, X axis value of _minXYBounds.X, so it is already in contact before running code:
-            (_sceneManager as ISpawnEntity).Spawn(_ball, new Vector2(_minXYBounds.X, (_maxXYBounds.Y / 2) - (_ballTexComp.TexSize.Y / 2)));
+            // SPAWN ball in left middle of screen, X axis value of _minXYBounds.X, so it is already in contact before running code:
+            (sceneManager as ISpawnEntity).Spawn(ball, new Vector2(_minXYBounds.X, (_maxXYBounds.Y / 2) - (ballTexComp.TexSize.Y / 2)));
 
             #endregion
 
@@ -385,19 +385,19 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             #region PONGMOVEMENTBOUNDRESPONDER
 
             // DECLARE & INSTANTIATE an IMovementBoundResponder as a new PongMovementBoundResponder, name it 'mmBoundResponder':
-            IMovementBoundResponder _mmBoundResponder = new PongMovementBoundResponder();
+            IMovementBoundResponder mmBoundResponder = new PongMovementBoundResponder();
 
-            // SET value of _minXYBounds to value of _minXYBounds:
-            _mmBoundResponder.MinXYBound = _minXYBounds;
+            // SET value of MinXYBounds to value of _minXYBounds:
+            mmBoundResponder.MinXYBound = _minXYBounds;
 
-            // SET value of _minXYBounds to value of _maxXYBounds:
-            _mmBoundResponder.MaxXYBound = _maxXYBounds;
+            // SET value of MaxXYBounds to value of _maxXYBounds:
+            mmBoundResponder.MaxXYBound = _maxXYBounds;
 
-            // INITIALISE _mmBoundResponder with DummyCreate():
-            (_mmBoundResponder as IInitialiseCreateDel).Initialise(DummyCreate);
+            // INITIALISE mmBoundResponder with DummyCreate():
+            (mmBoundResponder as IInitialiseCreateDel).Initialise(DummyCreate);
 
-            // INITIALISE _mmBoundResponder with _entityManager.Terminate():
-            (_mmBoundResponder as IInitialiseDeleteDel).Initialise(_entityManager.Terminate);
+            // INITIALISE mmBoundResponder with entityManager.Terminate():
+            (mmBoundResponder as IInitialiseDeleteDel).Initialise(entityManager.Terminate);
 
             #endregion
 
@@ -406,16 +406,16 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
 
             #region ACT
 
-            // CALL _RespondToBound on _mmBoundResponder, passing _ball as a parameter:
-            _mmBoundResponder.RespondToBound(_ball);
+            // CALL RespondToBound on mmBoundResponder, passing ball as a parameter:
+            mmBoundResponder.RespondToBound(ball);
 
             #endregion
 
 
             #region ASSERT
 
-            // IF _entityManager DOES NOT contain an Entity ID'd by '1':
-            if (!(_entityManager as IRtnEntityDictionary).ReturnEntityDict().ContainsKey(_ball.UID))
+            // IF entityManager DOES NOT contain an Entity ID'd by '1':
+            if (!(entityManager as IRtnEntityDictionary).ReturnEntityDict().ContainsKey(ball.UID))
             {
                 // DO NOTHING, PASSES
             }
@@ -459,7 +459,7 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // DECLARE & INSTANTIATE an IEntity using CreateBall(), name it '_ball':
             IEntity _ball = CreateBall();
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _ball's TextureComponent:
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of _ball's TextureComponent:
             ITexture _ballTexComp = (_ball as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
             // DECLARE & INITIALISE an IVelocity, give value of _ball's VelocityComponent, name it '_ballVelComp':
@@ -471,7 +471,7 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // SET Velocity of _ball's VelocityComponent with it's Speed Property multiplied by it's Direction Property:
             _ballVelComp.Velocity = _ballVelComp.Speed * _ballVelComp.Direction;
 
-            // ADD _tempEntity to _entityManager:
+            // ADD tempEntity to _entityManager:
             _entityManager.AddEntity(_ball);
 
             // SPAWN _ball in left middle of screen, X axis value of _maxXYBounds.X, so it is already in contact before running code:

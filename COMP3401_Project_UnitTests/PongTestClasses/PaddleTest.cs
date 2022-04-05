@@ -46,62 +46,62 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
 
             #region CREATION
 
-            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it '_tempEntity':
-            IEntity _tempEntity = new Entity();
+            // DECLARE & INSTANTIATE an IEntity as a new Entity, name it 'tempEntity':
+            IEntity tempEntity = new Entity();
 
-            // ASSIGN UID to _tempEntity:
-            _tempEntity.UID = 1;
+            // ASSIGN UID to tempEntity:
+            tempEntity.UID = 1;
 
             #endregion
 
 
             #region COMPONENT INITIALISATION
 
-            // ADD a new TransformComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new TransformComponent());
+            // ADD a new TransformComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new TransformComponent());
 
-            // ADD a new TextureComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new TextureComponent());
+            // ADD a new TextureComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new TextureComponent());
 
-            // ADD a new HitBoxComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new HitBoxComponent());
+            // ADD a new HitBoxComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new HitBoxComponent());
 
-            // ADD a new VelocityComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new VelocityComponent());
+            // ADD a new VelocityComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new VelocityComponent());
 
-            // ADD a new LayerComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new LayerComponent());
+            // ADD a new LayerComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new LayerComponent());
 
-            // ADD a new PlayerComponent to _tempEntity's ComponentList:
-            _tempEntity.AddComponent(new PlayerComponent());
+            // ADD a new PlayerComponent to tempEntity's ComponentList:
+            tempEntity.AddComponent(new PlayerComponent());
 
             #endregion
 
 
             #region SETTING COMPONENT VALUES
 
-            // DECLARE & INITIALISE an ITexture, name it '_tempTexComp', give instance of _tempEntity's TextureComponent:
-            ITexture _tempTexComp = (_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
+            // DECLARE & INITIALISE an ITexture, name it 'tempTexComp', give instance of tempEntity's TextureComponent:
+            ITexture tempTexComp = (tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture;
 
-            // SET & MOCK a texture size of 20x60 to _tempEntity's TextureComponent:
-            _tempTexComp.TexSize = new Point(20, 60);
+            // SET & MOCK a texture size of 20x60 to tempEntity's TextureComponent:
+            tempTexComp.TexSize = new Point(20, 60);
 
-            // SET Layer of _tempEntity's LayerComponent to '4':
-            ((_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
+            // SET Layer of tempEntity's LayerComponent to '4':
+            ((tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
-            // DECLARE & INITIALISE an IVelocity, name it '_tempVelComp', give value of _tempEntity's VelocityComponent:
-            IVelocity _tempVelComp = (_tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IVelocity, name it 'tempVelComp', give value of tempEntity's VelocityComponent:
+            IVelocity tempVelComp = (tempEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-            // SET Speed of _tempEntity's VelocityComponent with value of '10':
-            _tempVelComp.Speed = 10;
+            // SET Speed of tempEntity's VelocityComponent with value of '10':
+            tempVelComp.Speed = 10;
 
             #endregion
 
 
             #region RETURNING ENTITY TO CALLER
 
-            // RETURN instance of _tempEntity:
-            return _tempEntity;
+            // RETURN instance of tempEntity:
+            return tempEntity;
 
             #endregion
         }

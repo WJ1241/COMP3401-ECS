@@ -82,36 +82,36 @@ namespace COMP3401_Project.PongPackage.Responders
         /// </summary>
         public void RespondToBound(IEntity pEntity)
         {
-            // DECLARE & INITIALISE an IPosition, name it '_tempTfComp', give instance of pEntity's TransformComponent:
-            IPosition _tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
+            // DECLARE & INITIALISE an IPosition, name it 'tempTfComp', give instance of pEntity's TransformComponent:
+            IPosition tempTfComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TransformComponent"] as IPosition;
 
-            // DECLARE & INITIALISE an IPosition, name it '_tempVelComp', give instance of pEntity's VelocityComponent:
-            IVelocity _tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
+            // DECLARE & INITIALISE an IPosition, name it 'tempVelComp', give instance of pEntity's VelocityComponent:
+            IVelocity tempVelComp = (pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["VelocityComponent"] as IVelocity;
 
-            // DECLARE & INITIALISE a Point, name it '_tempTexSize', give value of pEntity's TexSize Property:
-            Point _tempTexSize = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).TexSize;
+            // DECLARE & INITIALISE a Point, name it 'tempTexSize', give value of pEntity's TexSize Property:
+            Point tempTexSize = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["TextureComponent"] as ITexture).TexSize;
 
-            // DECLARE & INITIALISE an ILayer, name it '_tempLayer', give value of pEntity's Layer Property:
-            int _tempLayer = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer;
+            // DECLARE & INITIALISE an ILayer, name it 'tempLayer', give value of pEntity's Layer Property:
+            int tempLayer = ((pEntity as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer;
 
             #region LAYER 3 (BALL)
 
             // IF pEntity is on Layer 3 (Non-Player Controlled Moveable Entity):
-            if (_tempLayer == 3)
+            if (tempLayer == 3)
             {
-                // DECLARE & INITIALISE a Vector2, name it '_tempVel', used for top and bottom bounds and reversing Y velocity:
-                Vector2 _tempVel = _tempVelComp.Velocity;
+                // DECLARE & INITIALISE a Vector2, name it 'tempVel', used for top and bottom bounds and reversing Y velocity:
+                Vector2 tempVel = tempVelComp.Velocity;
 
                 #region Y AXIS
 
                 // IF pEntity is at the top or bottom of the screen:
-                if (_tempTfComp.Position.Y <= _minXYBounds.Y || _tempTfComp.Position.Y + _tempTexSize.Y >= _maxXYBounds.Y)
+                if (tempTfComp.Position.Y <= _minXYBounds.Y || tempTfComp.Position.Y + tempTexSize.Y >= _maxXYBounds.Y)
                 {
-                    // MULTIPLY _tempVel.Y by '-1':
-                    _tempVel.Y *= -1;
+                    // MULTIPLY tempVel.Y by '-1':
+                    tempVel.Y *= -1;
 
-                    // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
-                    _tempVelComp.Velocity = _tempVel;
+                    // RE-ASSIGN value of tempVel to pEntity's Velocity Component:
+                    tempVelComp.Velocity = tempVel;
                 }
 
                 #endregion
@@ -120,26 +120,26 @@ namespace COMP3401_Project.PongPackage.Responders
                 #region X AXIS
 
                 // IF pEntity has exited left side of the screen:
-                if (_tempTfComp.Position.X <= _minXYBounds.X || _tempTfComp.Position.X >= _maxXYBounds.X - _tempTexSize.X)
+                if (tempTfComp.Position.X <= _minXYBounds.X || tempTfComp.Position.X >= _maxXYBounds.X - tempTexSize.X)
                 {
-                    // MULTIPLY _tempVel.X by '-1':
-                    _tempVel.X *= -1;
+                    // MULTIPLY tempVel.X by '-1':
+                    tempVel.X *= -1;
 
-                    // RE-ASSIGN value of _tempVel to pEntity's Velocity Component:
-                    _tempVelComp.Velocity = _tempVel;
+                    // RE-ASSIGN value of tempVel to pEntity's Velocity Component:
+                    tempVelComp.Velocity = tempVel;
 
 
-                    if (_tempTfComp.Position.X <= _minXYBounds.X)
+                    if (tempTfComp.Position.X <= _minXYBounds.X)
                     {
                         // SET
-                        _tempTfComp.Position = new Vector2(_minXYBounds.X, _tempTfComp.Position.Y);
+                        tempTfComp.Position = new Vector2(_minXYBounds.X, tempTfComp.Position.Y);
                     }
 
 
-                    if (_tempTfComp.Position.X >= _maxXYBounds.X - _tempTexSize.X)
+                    if (tempTfComp.Position.X >= _maxXYBounds.X - tempTexSize.X)
                     {
                         // SET
-                        _tempTfComp.Position = new Vector2(_maxXYBounds.X - _tempTexSize.X, _tempTfComp.Position.Y);
+                        tempTfComp.Position = new Vector2(_maxXYBounds.X - tempTexSize.X, tempTfComp.Position.Y);
                     }
 
 
@@ -164,32 +164,32 @@ namespace COMP3401_Project.PongPackage.Responders
             #region LAYER 4 (PADDLE)
 
             // IF pEntity is on Layer 4 (Player Controlled Moveable Entity):
-            if (_tempLayer == 4)
+            if (tempLayer == 4)
             {
-                // DECLARE & INITIALISE a Vector2, name it '_tempPos', used for top and bottom bounds and stopping movement:
-                Vector2 _tempPos = _tempTfComp.Position;
+                // DECLARE & INITIALISE a Vector2, name it 'tempPos', used for top and bottom bounds and stopping movement:
+                Vector2 tempPos = tempTfComp.Position;
 
-                // DECLARE & INITIALISE a Vector2, name it '_tempOrigin', used for keeping entity on screen:
-                Vector2 _tempOrigin = (_tempTfComp as IRotation).Origin;
+                // DECLARE & INITIALISE a Vector2, name it 'tempOrigin', used for keeping entity on screen:
+                Vector2 tempOrigin = (tempTfComp as IRotation).Origin;
 
                 #region Y AXIS
 
                 // IF pEntity is at the top of the screen:
-                if (_tempPos.Y - _tempOrigin.Y <= _minXYBounds.Y)
+                if (tempPos.Y - tempOrigin.Y <= _minXYBounds.Y)
                 {
-                    // SET _tempPos.Y to the top of the Y axis:
-                    _tempPos.Y = _minXYBounds.Y + _tempOrigin.Y;
+                    // SET tempPos.Y to the top of the Y axis:
+                    tempPos.Y = _minXYBounds.Y + tempOrigin.Y;
                 }
 
                 // ELSE IF pEntity is at the bottom of the screen:
-                else if (_tempPos.Y + _tempOrigin.Y >= _maxXYBounds.Y)
+                else if (tempPos.Y + tempOrigin.Y >= _maxXYBounds.Y)
                 {
-                    // SET _tempPos.Y to the bottom of the Y axis:
-                    _tempPos.Y = _maxXYBounds.Y - _tempOrigin.Y;
+                    // SET tempPos.Y to the bottom of the Y axis:
+                    tempPos.Y = _maxXYBounds.Y - tempOrigin.Y;
                 }
 
-                // RE-ASSIGN value of _tempPos to pEntity's TransformComponent:
-                _tempTfComp.Position = _tempPos;
+                // RE-ASSIGN value of tempPos to pEntity's TransformComponent:
+                tempTfComp.Position = tempPos;
 
                 #endregion
             }
