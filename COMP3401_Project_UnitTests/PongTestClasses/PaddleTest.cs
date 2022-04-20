@@ -5,8 +5,8 @@ using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Components;
 using COMP3401ECS_Engine.Components.Interfaces;
 using COMP3401ECS_Engine.Systems.Interfaces;
-using COMP3401_Project.PongPackage.Responders;
-using COMP3401_Project.PongPackage.Responders.Interfaces;
+using COMP3401ECS.PongPackage.Responders;
+using COMP3401ECS.PongPackage.Responders.Interfaces;
 
 namespace COMP3401_Project_UnitTests.PongTestClasses
 {

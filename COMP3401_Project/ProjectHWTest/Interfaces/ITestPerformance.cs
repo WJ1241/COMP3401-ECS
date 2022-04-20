@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
-namespace COMP3401_Project.ProjectHWTest.Interfaces
+namespace COMP3401ECS.ProjectHWTest.Interfaces
 {
     /// <summary>
     /// Interface which allows implementations to test the performance of a device's hardware

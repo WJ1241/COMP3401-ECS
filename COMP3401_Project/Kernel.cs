@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Input;
 using ClosedXML.Excel;
 using COMP3401ECS_Engine.Components;
 using COMP3401ECS_Engine.Components.Interfaces;
-using COMP3401ECS_Engine.Delegates.Interfaces;
 using COMP3401ECS_Engine.Entities;
 using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Factories;
@@ -19,12 +18,13 @@ using COMP3401ECS_Engine.Systems;
 using COMP3401ECS_Engine.Systems.Interfaces;
 using COMP3401ECS_Engine.Systems.Managers;
 using COMP3401ECS_Engine.Systems.Managers.Interfaces;
-using COMP3401_Project.PongPackage.Forms;
-using COMP3401_Project.PongPackage.Responders;
-using COMP3401_Project_ProjectHWTest;
-using COMP3401_Project.ProjectHWTest.Interfaces;
+using COMP3401ECS.PongPackage.Forms;
+using COMP3401ECS.PongPackage.Responders;
+using COMP3401ECS.ProjectHWTest;
+using COMP3401ECS.ProjectHWTest.Interfaces;
+using COMP3401ECS_Engine.Delegates;
 
-namespace COMP3401_Project
+namespace COMP3401ECS
 {
     /// <summary>
     /// Main Class of ECS System
@@ -110,10 +110,10 @@ namespace COMP3401_Project
             _screenSize.Y = GraphicsDevice.Viewport.Height;
 
             // INITIALISE _entityCreator with reference to CreateMultipleEntities():
-            (_entityCreator as IInitialiseCreateMultiDel).Initialise(CreateMultipleEntities);
+            (_entityCreator as IInitialiseParam<CreateMultipleDelegate>).Initialise(CreateMultipleEntities);
 
             // INITIALISE _entityCreator with reference to DeleteMultipleEntities():
-            (_entityCreator as IInitialiseDeleteDel).Initialise(DeleteMultipleEntities);
+            (_entityCreator as IInitialiseParam<DeleteDelegate>).Initialise(DeleteMultipleEntities);
 
             // SHOW _entityCreator:
             _entityCreator.Show();
@@ -183,10 +183,10 @@ namespace COMP3401_Project
             _serviceDict.Add("SceneManager", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneManager>());
 
             // INITIALISE _serviceDict["SceneManager"] with a new SceneGraph():
-            (_serviceDict["SceneManager"] as IInitialiseISpawnEntity).Initialise((_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneGraph>() as ISpawnEntity);
+            (_serviceDict["SceneManager"] as IInitialiseParam<ISpawnEntity>).Initialise((_serviceDict["ServiceFactory"] as IFactory<IService>).Create<SceneGraph>() as ISpawnEntity);
 
             // INITIALISE _serviceDict["EntityManager"] with reference to _serviceDict["SceneManager"]:
-            (_serviceDict["EntityManager"] as IInitialiseISceneManager).Initialise(_serviceDict["SceneManager"] as ISceneManager);
+            (_serviceDict["EntityManager"] as IInitialiseParam<ISceneManager>).Initialise(_serviceDict["SceneManager"] as ISceneManager);
 
             #endregion
 
@@ -199,7 +199,7 @@ namespace COMP3401_Project
             _serviceDict.Add("PerformanceMeasure", (_serviceDict["ServiceFactory"] as IFactory<IService>).Create<PerformanceMeasure>());
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with a new Stopwatch():
-            (_serviceDict["PerformanceMeasure"] as IInitialiseStopwatch).Initialise(new Stopwatch());
+            (_serviceDict["PerformanceMeasure"] as IInitialiseParam<Stopwatch>).Initialise(new Stopwatch());
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with a new XLWorkbook():
             (_serviceDict["PerformanceMeasure"] as IExportExcelData).Initialise((_serviceDict["DisposableFactory"] as IFactory<IDisposable>).Create<XLWorkbook>() as XLWorkbook);
@@ -208,13 +208,13 @@ namespace COMP3401_Project
             (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise((_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<long>>() as IList<long>);
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with "CPU" and a new PerformanceCounter():
-            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("CPU", new PerformanceCounter("Process", "% Processor Time", "COMP3401_Project"));
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("CPU", new PerformanceCounter("Process", "% Processor Time", "COMP3401ECS_Engine"));
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with "CPU" and a new List<float>():
             (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("CPU", (_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<float>>() as IList<float>);
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with "RAM" and a new PerformanceCounter():
-            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("RAM", new PerformanceCounter("Process", "Working Set", "COMP3401_Project"));
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("RAM", new PerformanceCounter("Process", "Working Set", "COMP3401ECS_Engine"));
 
             // INITIALISE _serviceDict["PerformanceMeasure"] with "RAM" and a new List<float>():
             (_serviceDict["PerformanceMeasure"] as ITestPerformance).Initialise("RAM", (_serviceDict["EnumerableFactory"] as IFactory<IEnumerable>).Create<List<float>>() as IList<float>);
@@ -233,7 +233,7 @@ namespace COMP3401_Project
             IUpdatable tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<DrawSystem>();
 
             // INITIALISE _serviceDict["SceneManager"] with _tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
+            (_serviceDict["SceneManager"] as IInitialiseParam<IUpdatable>).Initialise(tempUpdatable);
 
             #endregion
 
@@ -244,7 +244,7 @@ namespace COMP3401_Project
             tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<MovementSystem>();
 
             // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
+            (_serviceDict["SceneManager"] as IInitialiseParam<IUpdatable>).Initialise(tempUpdatable);
 
             #region IMOVEMENTBOUNDRESPONDER INITIALISATION
 
@@ -252,10 +252,10 @@ namespace COMP3401_Project
             IMovementBoundResponder _mmBoundResponder = (_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongMovementBoundResponder>() as IMovementBoundResponder;
 
             // INITIALISE _mmBoundResponder with reference to CreateBall() method:
-            (_mmBoundResponder as IInitialiseCreateDel).Initialise(CreateBall);
+            (_mmBoundResponder as IInitialiseParam<CreateDelegate>).Initialise(CreateBall);
 
             // INITIALISE _mmBoundResponder with reference to _entityDict.Terminate() method:
-            (_mmBoundResponder as IInitialiseDeleteDel).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
+            (_mmBoundResponder as IInitialiseParam<DeleteDelegate>).Initialise((_serviceDict["EntityManager"] as IEntityManager).Terminate);
 
             // INITIALISE _mmBoundResponder.MaxXYBound with a new Point set at (0,0):
             _mmBoundResponder.MinXYBound = new Point(0);
@@ -266,7 +266,7 @@ namespace COMP3401_Project
             #endregion
 
             // INITIALISE tempUpdatable with _mmBoundResponder:
-            (tempUpdatable as IInitialiseIMovementBoundResponder).Initialise(_mmBoundResponder);
+            (tempUpdatable as IInitialiseParam<IMovementBoundResponder>).Initialise(_mmBoundResponder);
 
 
             #endregion
@@ -278,10 +278,10 @@ namespace COMP3401_Project
             tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<InputSystem>();
 
             // INITIALISE tempUpdatable with a new PaddleInputResponder():
-            (tempUpdatable as IInitialiseIInputResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
+            (tempUpdatable as IInitialiseParam<IInputResponder>).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PaddleInputResponder>() as IInputResponder);
 
             // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
+            (_serviceDict["SceneManager"] as IInitialiseParam<IUpdatable>).Initialise(tempUpdatable);
 
             #endregion
 
@@ -292,10 +292,10 @@ namespace COMP3401_Project
             tempUpdatable = (_serviceDict["UpdatableFactory"] as IFactory<IUpdatable>).Create<CollisionSystem>();
 
             // INITIALISE tempUpdatable with a new PongEntityCollisionResponder():
-            (tempUpdatable as IInitialiseICollisionResponder).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
+            (tempUpdatable as IInitialiseParam<ICollisionResponder>).Initialise((_serviceDict["ResponderFactory"] as IFactory<IResponder>).Create<PongEntityCollisionResponder>() as ICollisionResponder);
 
             // INITIALISE _serviceDict["SceneManager"] with tempUpdatable:
-            (_serviceDict["SceneManager"] as IInitialiseIUpdatable).Initialise(tempUpdatable);
+            (_serviceDict["SceneManager"] as IInitialiseParam<IUpdatable>).Initialise(tempUpdatable);
 
             #endregion
 

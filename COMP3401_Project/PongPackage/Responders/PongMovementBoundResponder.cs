@@ -1,19 +1,17 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using COMP3401ECS_Engine.Components.Interfaces;
 using COMP3401ECS_Engine.Delegates;
-using COMP3401ECS_Engine.Delegates.Interfaces;
 using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Systems.Interfaces;
 
-namespace COMP3401_Project.PongPackage.Responders
+namespace COMP3401ECS.PongPackage.Responders
 {
     /// <summary>
     /// Class which responds to movement of any Pong entity
     /// Author: William Smith
     /// Date: 09/02/22
     /// </summary>
-    public class PongMovementBoundResponder : IInitialiseCreateDel, IInitialiseDeleteDel, IMovementBoundResponder
+    public class PongMovementBoundResponder : IInitialiseParam<CreateDelegate>, IInitialiseParam<DeleteDelegate>, IMovementBoundResponder
     {
         #region FIELD VARIABLES
 
@@ -45,7 +43,7 @@ namespace COMP3401_Project.PongPackage.Responders
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISECREATEDEL
+        #region IMPLEMENTATION OF IINITIALISEPARAM<CREATEDELEGATE>
 
         /// <summary>
         /// Initialises an object with a 'CreateDelegate' method
@@ -60,7 +58,7 @@ namespace COMP3401_Project.PongPackage.Responders
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISEDELETEDEL
+        #region IMPLEMENTATION OF IINITIALISEPARAM<DELETEDELEGATE>
 
         /// <summary>
         /// Initialises an object with a 'DeleteDelegate' method

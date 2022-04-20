@@ -7,9 +7,10 @@ using Microsoft.Xna.Framework;
 using ClosedXML.Excel;
 using COMP3401ECS_Engine.Exceptions;
 using COMP3401ECS_Engine.Services.Interfaces;
-using COMP3401_Project.ProjectHWTest.Interfaces;
+using COMP3401ECS_Engine.Systems.Interfaces;
+using COMP3401ECS.ProjectHWTest.Interfaces;
 
-namespace COMP3401_Project_ProjectHWTest
+namespace COMP3401ECS.ProjectHWTest
 {
     /// <summary>
     /// Class which gets current usages from the user's system and sends results to an Excel Spreadsheet
@@ -19,39 +20,8 @@ namespace COMP3401_Project_ProjectHWTest
     /// <REFERENCE> Cerutti, T. (2016) Exporting the values in List to excel. Available at: https://stackoverflow.com/questions/2206279/exporting-the-values-in-list-to-excel. (Accessed: 31 March 2022). </REFERENCE>
     /// <REFERENCE> 'shytikov' (2018) c# calculate CPU usage for a specific application. Available at: https://stackoverflow.com/questions/1277556/c-sharp-calculate-cpu-usage-for-a-specific-application. (Accessed: 4 April 2022). </REFERENCE>
     /// <REFERENCE> Whitaker, R.B. (No Date) Calculating The Frame Rate. Available at: http://rbwhitaker.wikidot.com/calculating-the-frame-rate. (Accessed: 31 March 2022). </REFERENCE>
-    public class PerformanceMeasure : IExportExcelData, IInitialiseStopwatch, IService, ITestPerformance
+    public class PerformanceMeasure : IExportExcelData, IInitialiseParam<Stopwatch>, IService, ITestPerformance
     {
-        #region J0B LIST
-
-        /*
-                    Thursday and Friday Jobs
-            - Get RAM Usage Done
-            - Get CPU Usage Done
-            - Get FPS Counter Done
-
-            Tests to take place
-
-		            Timed Tests
-            - Time taken to create set amount of entities
-            - Time taken to delete set amount of entities
-
-		            Resource Tests
-
-	            50 entities
-            - FPS Average over 5 minutes with 50 entities
-            - CPU usage Average over 5 minutes with 50 entities
-            - RAM usage Average over 5 minutes with 50 entities
-
-	            500 entities
-            - FPS Average over 5 minutes with 500 entities
-            - CPU usage Average over 5 minutes with 500 entities
-            - RAM usage Average over 5 minutes with 500 entities
-         
-        */
-
-        #endregion
-
-
         #region FIELD VARIABLES
 
         // DECLARE an IDictionary<string, PerformanceCounter>, name it '_hwCounters':

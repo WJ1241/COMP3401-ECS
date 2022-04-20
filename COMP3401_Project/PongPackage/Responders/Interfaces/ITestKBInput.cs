@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace COMP3401_Project.PongPackage.Responders.Interfaces
+namespace COMP3401ECS.PongPackage.Responders.Interfaces
 {
     /// <summary>
     /// Interface which allows implementations to have their input commands tested

@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using COMP3401ECS.PongPackage.Responders.Interfaces;
 using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Components.Interfaces;
-using COMP3401_Project.PongPackage.Responders.Interfaces;
 using COMP3401ECS_Engine.Systems.Interfaces;
 
-namespace COMP3401_Project.PongPackage.Responders
+namespace COMP3401ECS.PongPackage.Responders
 {
     /// <summary>
     /// Class which responds to user input to control Paddle on screen

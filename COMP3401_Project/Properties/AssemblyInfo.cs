@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("COMP3401_Project")]
-[assembly: AssemblyProduct("COMP3401_Project")]
+[assembly: AssemblyTitle("COMP3401ECS")]
+[assembly: AssemblyProduct("COMP3401ECS")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("")]

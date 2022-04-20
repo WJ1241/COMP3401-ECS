@@ -1,5 +1,5 @@
 ﻿
-namespace COMP3401_Project.PongPackage.Forms
+namespace COMP3401ECS.PongPackage.Forms
 {
     partial class CreationScreen
     {

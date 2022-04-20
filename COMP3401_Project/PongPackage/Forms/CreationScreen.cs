@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Windows.Forms;
 using COMP3401ECS_Engine.Delegates;
-using COMP3401ECS_Engine.Delegates.Interfaces;
+using COMP3401ECS_Engine.Systems.Interfaces;
 
-namespace COMP3401_Project.PongPackage.Forms
+namespace COMP3401ECS.PongPackage.Forms
 {
     /// <summary>
     /// Partial Class which contains logic related to creating a specified number of entities to be displayed on screen
     /// Author: William Smith
     /// Date: 27/03/22
     /// </summary>
-    public partial class CreationScreen : Form, IInitialiseCreateMultiDel, IInitialiseDeleteDel
+    public partial class CreationScreen : Form, IInitialiseParam<CreateMultipleDelegate>, IInitialiseParam<DeleteDelegate>
     {
         #region FIELD VARIABLES
 
@@ -40,7 +40,7 @@ namespace COMP3401_Project.PongPackage.Forms
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISECREATEMULTIDEL
+        #region IMPLEMENTATION OF IINITIALISEPARAM<CREATEMULTIPLEDELEGATE>
 
         /// <summary>
         /// Initialises an object with a 'CreateMultipleDelegate' method
@@ -55,7 +55,7 @@ namespace COMP3401_Project.PongPackage.Forms
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISEDELETEDEL
+        #region IMPLEMENTATION OF IINITIALISEPARAM<DELETEDELEGATE>
 
         /// <summary>
         /// Initialises an object with a 'DeleteMultipleDelegate' method

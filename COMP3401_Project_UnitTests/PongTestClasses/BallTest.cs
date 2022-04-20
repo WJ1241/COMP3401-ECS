@@ -2,14 +2,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework;
 using COMP3401ECS_Engine.Components;
 using COMP3401ECS_Engine.Components.Interfaces;
-using COMP3401ECS_Engine.Delegates.Interfaces;
 using COMP3401ECS_Engine.Entities;
 using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Systems.Interfaces;
 using COMP3401ECS_Engine.Systems.Managers;
 using COMP3401ECS_Engine.Systems.Managers.Interfaces;
-using COMP3401_Project.PongPackage.Responders;
-
+using COMP3401ECS.PongPackage.Responders;
+using COMP3401ECS_Engine.Delegates;
 
 namespace COMP3401_Project_UnitTests.PongTestClasses
 {
@@ -329,6 +328,11 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
         #endregion
 
 
+        //// THE TERMINATION TESTS WILL FAIL DUE TO REMOVING
+        //// TERMINATION WHEN LEFT AND RIGHT SCREEN IS HIT BY BALL
+        //// SO THAT ENTITIES ARE NOT BEING CREATED AND TERMINATED
+        //// AT RUNTIME
+
         #region TERMINATION
 
         /// <summary>
@@ -348,10 +352,10 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             ISceneManager sceneManager = new SceneManager();
 
             // INITIALISE _entityManager with _sceneManager:
-            (entityManager as IInitialiseISceneManager).Initialise(sceneManager);
+            (entityManager as IInitialiseParam<ISceneManager>).Initialise(sceneManager);
 
             // INITIALISE _sceneManager with a new SceneGraph():
-            (sceneManager as IInitialiseISpawnEntity).Initialise(new SceneGraph());
+            (sceneManager as IInitialiseParam<ISpawnEntity>).Initialise(new SceneGraph());
 
             #endregion
 
@@ -394,10 +398,10 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             mmBoundResponder.MaxXYBound = _maxXYBounds;
 
             // INITIALISE mmBoundResponder with DummyCreate():
-            (mmBoundResponder as IInitialiseCreateDel).Initialise(DummyCreate);
+            (mmBoundResponder as IInitialiseParam<CreateDelegate>).Initialise(DummyCreate);
 
             // INITIALISE mmBoundResponder with entityManager.Terminate():
-            (mmBoundResponder as IInitialiseDeleteDel).Initialise(entityManager.Terminate);
+            (mmBoundResponder as IInitialiseParam<DeleteDelegate>).Initialise(entityManager.Terminate);
 
             #endregion
 
@@ -446,10 +450,10 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             ISceneManager _sceneManager = new SceneManager();
 
             // INITIALISE _entityManager with _sceneManager:
-            (_entityManager as IInitialiseISceneManager).Initialise(_sceneManager);
+            (_entityManager as IInitialiseParam<ISceneManager>).Initialise(_sceneManager);
 
             // INITIALISE _sceneManager with a new SceneGraph():
-            (_sceneManager as IInitialiseISpawnEntity).Initialise(new SceneGraph());
+            (_sceneManager as IInitialiseParam<ISpawnEntity>).Initialise(new SceneGraph());
 
             #endregion
 
@@ -492,10 +496,10 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             _mmBoundResponder.MaxXYBound = _maxXYBounds;
 
             // INITIALISE _mmBoundResponder with DummyCreate():
-            (_mmBoundResponder as IInitialiseCreateDel).Initialise(DummyCreate);
+            (_mmBoundResponder as IInitialiseParam<CreateDelegate>).Initialise(DummyCreate);
 
             // INITIALISE _mmBoundResponder with _entityManager.Terminate():
-            (_mmBoundResponder as IInitialiseDeleteDel).Initialise(_entityManager.Terminate);
+            (_mmBoundResponder as IInitialiseParam<DeleteDelegate>).Initialise(_entityManager.Terminate);
 
             #endregion
 

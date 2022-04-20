@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using ClosedXML.Excel;
 
-namespace COMP3401_Project.ProjectHWTest.Interfaces
+namespace COMP3401ECS.ProjectHWTest.Interfaces
 {
     /// <summary>
     /// Interface which allows implementations to export data to an MS Excel spreadsheet

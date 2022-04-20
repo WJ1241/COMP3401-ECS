@@ -3,7 +3,7 @@ using COMP3401ECS_Engine.Components.Interfaces;
 using COMP3401ECS_Engine.Entities.Interfaces;
 using COMP3401ECS_Engine.Systems.Interfaces;
 
-namespace COMP3401_Project.PongPackage.Responders
+namespace COMP3401ECS.PongPackage.Responders
 {
     /// <summary>
     /// Class which responds to collisions between Pong Entities

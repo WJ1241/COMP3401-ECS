@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Kernel.cs" />
     <Compile Include="ProjectHWTest\Interfaces\IExportExcelData.cs" />
-    <Compile Include="ProjectHWTest\Interfaces\IInitialiseStopwatch.cs" />
     <Compile Include="ProjectHWTest\Interfaces\ITestPerformance.cs" />
     <Compile Include="ProjectHWTest\PerformanceMeasure.cs" />
     <Compile Include="PongPackage\Forms\CreationScreen.cs">
