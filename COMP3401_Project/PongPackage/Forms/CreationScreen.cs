@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using COMP3401_Project.ECSPackage.Delegates;
-using COMP3401_Project.ECSPackage.Delegates.Interfaces;
+using COMP3401ECS_Engine.Delegates;
+using COMP3401ECS_Engine.Delegates.Interfaces;
 
 namespace COMP3401_Project.PongPackage.Forms
 {

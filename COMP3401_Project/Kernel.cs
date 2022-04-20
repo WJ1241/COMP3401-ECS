@@ -7,18 +7,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ClosedXML.Excel;
-using COMP3401_Project.ECSPackage.Components;
-using COMP3401_Project.ECSPackage.Components.Interfaces;
-using COMP3401_Project.ECSPackage.Delegates.Interfaces;
-using COMP3401_Project.ECSPackage.Entities;
-using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Factories;
-using COMP3401_Project.ECSPackage.Factories.Interfaces;
-using COMP3401_Project.ECSPackage.Services.Interfaces;
-using COMP3401_Project.ECSPackage.Systems;
-using COMP3401_Project.ECSPackage.Systems.Interfaces;
-using COMP3401_Project.ECSPackage.Systems.Managers;
-using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
+using COMP3401ECS_Engine.Components;
+using COMP3401ECS_Engine.Components.Interfaces;
+using COMP3401ECS_Engine.Delegates.Interfaces;
+using COMP3401ECS_Engine.Entities;
+using COMP3401ECS_Engine.Entities.Interfaces;
+using COMP3401ECS_Engine.Factories;
+using COMP3401ECS_Engine.Factories.Interfaces;
+using COMP3401ECS_Engine.Services.Interfaces;
+using COMP3401ECS_Engine.Systems;
+using COMP3401ECS_Engine.Systems.Interfaces;
+using COMP3401ECS_Engine.Systems.Managers;
+using COMP3401ECS_Engine.Systems.Managers.Interfaces;
 using COMP3401_Project.PongPackage.Forms;
 using COMP3401_Project.PongPackage.Responders;
 using COMP3401_Project_ProjectHWTest;
@@ -323,23 +323,11 @@ namespace COMP3401_Project
 
             #endregion
 
-            // INITIALISE base class:
-            base.Initialize();
-        }
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
-        protected override void LoadContent()
-        {
-            // INSTANTIATE _spriteBatch as new SpriteBatch:
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             #region INITIALISING ENTITIES WITH COMPONENTS
 
             #region BACKGROUND
-            
+
             // ADD a new TransformComponent to _entityDict[0]'s ComponentList:
             _entityDict[0].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<TransformComponent>());
 
@@ -351,7 +339,7 @@ namespace COMP3401_Project
 
             #endregion
 
-
+            /*
             #region PADDLE 1
 
             // ADD a new TransformComponent to _entityDict[1]'s ComponentList:
@@ -396,9 +384,22 @@ namespace COMP3401_Project
             _entityDict[2].AddComponent((_serviceDict["ComponentFactory"] as IFactory<IComponent>).Create<LayerComponent>());
 
             #endregion
+            */
 
             #endregion
 
+            // INITIALISE base class:
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // INSTANTIATE _spriteBatch as new SpriteBatch:
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             #region SETTING ENTITY COMPONENT VALUES
 
@@ -418,7 +419,7 @@ namespace COMP3401_Project
 
             #endregion
 
-
+            /*
             #region PADDLE 1
 
             // INITIALISE tempTexComp with instance of _entityDict[0]'s TextureComponent:
@@ -469,6 +470,7 @@ namespace COMP3401_Project
             ((_entityDict[2] as IRtnROIComponentDictionary).ReturnComponentDictionary()["LayerComponent"] as ILayer).Layer = 4;
 
             #endregion
+            */
 
             #endregion
 
@@ -521,8 +523,8 @@ namespace COMP3401_Project
 
             */
 
-            // CALL CreateMultipleEntities(), passing 350 as a parameter:
-            CreateMultipleEntities(350);
+            // CALL CreateMultipleEntities(), passing 100 as a parameter:
+            //CreateMultipleEntities(100);
 
             #endregion
         }
@@ -543,12 +545,13 @@ namespace COMP3401_Project
         /// <param name="pGameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime pGameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed
+                || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 // CALL Exit():
                 Exit();
             }
-           
+
             // CALL Update() on _serviceDict["SceneManager"], passing pGameTime as a parameter:
             (_serviceDict["SceneManager"] as IUpdatable).Update(pGameTime);
 
@@ -573,7 +576,7 @@ namespace COMP3401_Project
 
             // CALL TestFPS() on _serviceDict["PerformanceMeasure"], passing pGameTime as a parameter:
             // CALLED IN DRAW() AS UPDATE() DOES NOT CHANGE FPS
-            (_serviceDict["PerformanceMeasure"] as ITestPerformance).TestFPS(pGameTime);
+            //(_serviceDict["PerformanceMeasure"] as ITestPerformance).TestFPS(pGameTime);
 
             // CALL Draw() on base class, passing pGameTime as a parameter:
             base.Draw(pGameTime);
@@ -693,33 +696,42 @@ namespace COMP3401_Project
         /// <param name="pInt"> Number of entities to be created </param>
         private void CreateMultipleEntities(int pInt)
         {
-            //// DECLARE & INSTANTIATE a Stopwatch, name it 'tempStopwatch':
+            // DECLARE & INSTANTIATE a Stopwatch, name it 'tempStopwatch':
             //Stopwatch tempStopwatch = new Stopwatch();
 
             // FORLOOP, iterate for as many times specified by pInt:
             for (int i = 0; i < pInt; i++)
             {
-                //// RESET tempStopwatch():
-                //tempStopwatch.Reset();
+                /*
+                // RESET tempStopwatch():
+                tempStopwatch.Reset();
 
-                //// START tempStopwatch():
-                //tempStopwatch.Start();
+                // START tempStopwatch():
+                tempStopwatch.Start();
+                */
 
                 // CALL CreateBall():
                 CreateBall();
 
-                //// STOP tempStopwatch:
-                //tempStopwatch.Stop();
+                /*
+                // STOP tempStopwatch:
+                tempStopwatch.Stop();
 
-                //// CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, tempStopWatch's elapsed ms, and FALSE as parameters:
-                //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
+                // CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, tempStopWatch's elapsed ms, and FALSE as parameters:
+                (_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
+                */
             }
 
-            //// CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, 0 as null cannot be used, and TRUE as parameters:
-            //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", 0, true);
+            /*
+            // CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, 0 as null cannot be used, and TRUE as parameters:
+            (_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("CreationTest", "ShortTest", 0, true);
+
+            // CALL DeleteMultipleEntities(), passing 100 as a parameter:
+            DeleteMultipleEntities(100);
 
             // CALL UpdateLongTimedTest() on _serviceDict["PerformanceMeasure"]:
             (_serviceDict["PerformanceMeasure"] as ITestPerformance).UpdateLongTimedTest();
+            */
         }
 
         /// <summary>
@@ -740,20 +752,24 @@ namespace COMP3401_Project
                 // FORLOOP, iterate for as many times specified by pInt:
                 for (int i = tempEntCount; i > tempEntCount - pInt; i--)
                 {
-                    //// RESET tempStopwatch():
-                    //tempStopwatch.Reset();
+                    /*
+                    // RESET tempStopwatch():
+                    tempStopwatch.Reset();
 
-                    //// START tempStopwatch():
-                    //tempStopwatch.Start();
+                    // START tempStopwatch():
+                    tempStopwatch.Start();
+                    */
 
                     // REMOVE entity stored at address 'i' from "EntityManager":
                     (_serviceDict["EntityManager"] as IEntityManager).Terminate(i);
 
+                    /*
                     // STOP tempStopwatch:
-                    //tempStopwatch.Stop();
+                    tempStopwatch.Stop();
 
                     // CALL QuickTimedTest() on _serviceDict["PerformanceMeasure"], passing TWO strings, tempStopWatch's elapsed ms, and FALSE as parameters:
-                    //(_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("TerminationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
+                    (_serviceDict["PerformanceMeasure"] as ITestPerformance).QuickTimedTest("TerminationTest", "ShortTest", tempStopwatch.ElapsedMilliseconds, false);
+                    */
 
                     // DECREMENT _pongEntityID by '1':
                     _pongEntityID--;

@@ -1,13 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework;
-using COMP3401_Project.ECSPackage.Components;
-using COMP3401_Project.ECSPackage.Components.Interfaces;
-using COMP3401_Project.ECSPackage.Delegates.Interfaces;
-using COMP3401_Project.ECSPackage.Entities;
-using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Systems.Interfaces;
-using COMP3401_Project.ECSPackage.Systems.Managers;
-using COMP3401_Project.ECSPackage.Systems.Managers.Interfaces;
+using COMP3401ECS_Engine.Components;
+using COMP3401ECS_Engine.Components.Interfaces;
+using COMP3401ECS_Engine.Delegates.Interfaces;
+using COMP3401ECS_Engine.Entities;
+using COMP3401ECS_Engine.Entities.Interfaces;
+using COMP3401ECS_Engine.Systems.Interfaces;
+using COMP3401ECS_Engine.Systems.Managers;
+using COMP3401ECS_Engine.Systems.Managers.Interfaces;
 using COMP3401_Project.PongPackage.Responders;
 
 

@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using COMP3401_Project.ECSPackage.Components.Interfaces;
-using COMP3401_Project.ECSPackage.Delegates;
-using COMP3401_Project.ECSPackage.Delegates.Interfaces;
-using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Systems.Interfaces;
+using COMP3401ECS_Engine.Components.Interfaces;
+using COMP3401ECS_Engine.Delegates;
+using COMP3401ECS_Engine.Delegates.Interfaces;
+using COMP3401ECS_Engine.Entities.Interfaces;
+using COMP3401ECS_Engine.Systems.Interfaces;
 
 namespace COMP3401_Project.PongPackage.Responders
 {
@@ -102,8 +102,6 @@ namespace COMP3401_Project.PongPackage.Responders
                 // DECLARE & INITIALISE a Vector2, name it 'tempVel', used for top and bottom bounds and reversing Y velocity:
                 Vector2 tempVel = tempVelComp.Velocity;
 
-                #region Y AXIS
-
                 // IF pEntity is at the top or bottom of the screen:
                 if (tempTfComp.Position.Y <= _minXYBounds.Y || tempTfComp.Position.Y + tempTexSize.Y >= _maxXYBounds.Y)
                 {
@@ -113,13 +111,7 @@ namespace COMP3401_Project.PongPackage.Responders
                     // RE-ASSIGN value of tempVel to pEntity's Velocity Component:
                     tempVelComp.Velocity = tempVel;
                 }
-
-                #endregion
-
-
-                #region X AXIS
-
-                // IF pEntity has exited left side of the screen:
+                // IF pEntity has exited the left or right side of the screen:
                 if (tempTfComp.Position.X <= _minXYBounds.X || tempTfComp.Position.X >= _maxXYBounds.X - tempTexSize.X)
                 {
                     // MULTIPLY tempVel.X by '-1':
@@ -128,21 +120,18 @@ namespace COMP3401_Project.PongPackage.Responders
                     // RE-ASSIGN value of tempVel to pEntity's Velocity Component:
                     tempVelComp.Velocity = tempVel;
 
-
+                    // IF entity exceeds the left screen bounds:
                     if (tempTfComp.Position.X <= _minXYBounds.X)
                     {
-                        // SET
+                        // SET Position property value of tempTFComp to the left edge of the screen so that it cannot leave screen if travelling too quick:
                         tempTfComp.Position = new Vector2(_minXYBounds.X, tempTfComp.Position.Y);
                     }
-
-
+                    // IF entity exceeds the right screen bounds:
                     if (tempTfComp.Position.X >= _maxXYBounds.X - tempTexSize.X)
                     {
-                        // SET
+                        // SET Position property value of tempTFComp to the right edge of the screen so that it cannot leave screen if travelling too quick:
                         tempTfComp.Position = new Vector2(_maxXYBounds.X - tempTexSize.X, tempTfComp.Position.Y);
                     }
-
-
 
                     /*
 
@@ -154,8 +143,6 @@ namespace COMP3401_Project.PongPackage.Responders
 
                     */
                 }
-
-                #endregion
             }
 
             #endregion

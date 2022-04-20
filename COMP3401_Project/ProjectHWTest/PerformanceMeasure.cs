@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using ClosedXML.Excel;
-using COMP3401_Project.ECSPackage.Exceptions;
-using COMP3401_Project.ECSPackage.Services.Interfaces;
+using COMP3401ECS_Engine.Exceptions;
+using COMP3401ECS_Engine.Services.Interfaces;
 using COMP3401_Project.ProjectHWTest.Interfaces;
 
 namespace COMP3401_Project_ProjectHWTest

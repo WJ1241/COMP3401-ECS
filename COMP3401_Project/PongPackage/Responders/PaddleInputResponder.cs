@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using COMP3401_Project.ECSPackage.Entities.Interfaces;
-using COMP3401_Project.ECSPackage.Components.Interfaces;
+using COMP3401ECS_Engine.Entities.Interfaces;
+using COMP3401ECS_Engine.Components.Interfaces;
 using COMP3401_Project.PongPackage.Responders.Interfaces;
-using COMP3401_Project.ECSPackage.Systems.Interfaces;
+using COMP3401ECS_Engine.Systems.Interfaces;
 
 namespace COMP3401_Project.PongPackage.Responders
 {
