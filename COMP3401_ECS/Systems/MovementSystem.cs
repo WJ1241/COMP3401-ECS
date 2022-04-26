@@ -45,7 +45,7 @@ namespace COMP3401ECS_Engine.Systems
         #endregion
 
 
-        #region IMPLEMENTATION OF IINITIALISEIMOVEMENTBOUNDRESPONDER
+        #region IMPLEMENTATION OF IINITIALISEPARAM<IMOVEMENTBOUNDRESPONDER>
 
         /// <summary>
         /// Initialises an object with an IMovementBoundResponder object
