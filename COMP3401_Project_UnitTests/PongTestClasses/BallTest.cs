@@ -421,13 +421,13 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // IF entityManager DOES NOT contain an Entity ID'd by '1':
             if (!(entityManager as IRtnEntityDictionary).ReturnEntityDict().ContainsKey(ball.UID))
             {
-                // DO NOTHING, PASSES
+                // ASSERT that the test has failed, with corresponding message:
+                Assert.Fail("ERROR: _ball has an active instance!");
             }
             // IF _entityManager DOES contain an Entity ID'd by '1':
             else
             {
-                // ASSERT that the test has failed, with corresponding message:
-                Assert.Fail("ERROR: _ball has an active instance!");
+                // DO NOTHING, PASSES
             }
 
             #endregion
@@ -519,13 +519,13 @@ namespace COMP3401_Project_UnitTests.PongTestClasses
             // IF _entityManager DOES NOT contain an Entity ID'd by '1':
             if (!(_entityManager as IRtnEntityDictionary).ReturnEntityDict().ContainsKey(_ball.UID))
             {
-                // DO NOTHING, PASSES
+                // ASSERT that the test has failed, with corresponding message:
+                Assert.Fail("ERROR: _ball has an active instance!");
             }
             // IF _entityManager DOES contain an Entity ID'd by '1':
             else
             {
-                // ASSERT that the test has failed, with corresponding message:
-                Assert.Fail("ERROR: _ball has an active instance!");
+                // DO NOTHING, PASSES
             }
 
             #endregion
